@@ -113,16 +113,16 @@
 	// SAVING THE UNIQUE STATUS AND CHECKING FOR CHANGES
 	// --------------------------------------------------------------------------------------------
 	
-	$statusID = ($gameid + $personastate); // na przyklad TF2 (440) + status Online (1) = 441
+	$statusID = ($gameid + $personastate); // for example Team Fortress 2 ID is 440 + status Online (1) = 441 and this is Unique ID. this is my strange idea, but it works.
 	$statusID_prev = explode("\n", file_get_contents('sig.txt'));
 	
 	if ($statusID_prev[0] == $statusID) {
-		echo "- Nic się nie zmieniło, robię exita :)";
+		echo "- Nothings changed ";
 		exit; 
 	} else { 
 		$status_file = fopen("sig.txt","w");
 		fwrite($status_file, $statusID);
-		echo "- Nowy status zapisany do pliku";
+		echo "-  New status saved in file ";
 	}
 
 	// --------------------------------------------------------------------------------------------

@@ -186,7 +186,7 @@
 	
 	$link_address='http://YOUR-WEBSITE.COM/sig.png';
 	imagepng($img, 'sig.png');
-	echo "<br>- You can find your image here<br><br><a href='$link_address'>http://YOUR-WEBSITE.COM/sig.png</a>";
+	echo "<br>- You can find your image here<br><br><a href='$link_address'>$link_address</a>";
 	exit;
 ?>
 

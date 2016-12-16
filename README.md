@@ -1,4 +1,4 @@
-# Personal-Steam-Signature (MIT license)
+# Personal Steam Signature Generator (MIT license)
 This PHP script generates image (PNG) with Steam status.  
 This is personal script for just one user.  
 Use CRON to execute this file.  

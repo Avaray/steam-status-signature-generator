@@ -18,6 +18,6 @@ You can remove it if you want (if you dont work with Valve's Hammer Editor):
 - lines from 156 to 164
 
 ## From Author:
-I created this script as first (or second) PHP project ever. This was my start with programming (Thanks Simon for all your help). I cant give you a word that everything will work for you. It worked for me pretty well, but you might encounter problems, with Paths maybe (check line 90).  
+I created this script as first (or second) PHP project ever. This was my start with programming (Thanks Simon for all your help). I cant give you a word that everything will work for you. It worked for me pretty well, but you might encounter problems, with Paths maybe (it depends on your host machine; check line 90).  
 This is not complete project. I abandoned this project long time ago and I will not work with it anymore.  
 Right now im working with C# and NodeJS.

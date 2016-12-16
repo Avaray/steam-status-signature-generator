@@ -9,8 +9,8 @@
 	// STEAM API - GETTING INFORMATIONS
 	// --------------------------------------------------------------------------------------------
 	
-	$STEAM_APIKEY = "HERE-MUST-BE-YOUR-STEAM-API-KEY"; // Here insert your Steam Web Api Key - get from here https://steamcommunity.com/dev/apikey
-	$STEAM_PROFILEID = "76561198037068779"; // Here insert your steamID64
+	$STEAM_APIKEY = "DB4794EB61702CB24FF458365D0B6E66";
+	$STEAM_PROFILEID = "76561198037068779";
 	$error = null;
 	$STEAM_BASEURL = "api.steampowered.com";
 	$STEAM_FORMAT = "json";
@@ -84,7 +84,7 @@
 	}
 	
 	// --------------------------------------------------------------------------------------------
-	// SOME RANDOM SETTINGS
+	// SOME SETTINGS
 	// --------------------------------------------------------------------------------------------
 	
 	chdir(dirname(__FILE__));
@@ -110,23 +110,23 @@
 	
 	
 	// --------------------------------------------------------------------------------------------
-	// SAVING THE UNIQUE STATUS AND CHECKING FOR CHANGES
+	// SAVING USER STATUS AND CHECKING IF SOMETHING CHANGED
 	// --------------------------------------------------------------------------------------------
 	
-	$statusID = ($gameid + $personastate); // for example Team Fortress 2 ID is 440 + status Online (1) = 441 and this is Unique ID. this is my strange idea, but it works.
+	$statusID = ($gameid + $personastate); // for example TF2 (440) + status Online (1) = 441
 	$statusID_prev = explode("\n", file_get_contents('sig.txt'));
 	
 	if ($statusID_prev[0] == $statusID) {
-		echo "- Nothings changed ";
+		echo "- Nothing changed.<br><br>Current image:<br><a href='http://av.execute.run/sig/sig.png'>http://av.execute.run/sig/sig.png</a>";
 		exit; 
 	} else { 
 		$status_file = fopen("sig.txt","w");
 		fwrite($status_file, $statusID);
-		echo "-  New status saved in file ";
+		echo "- New status saved to text file (sig.txt)<br><br>";
 	}
 
 	// --------------------------------------------------------------------------------------------
-	// IMAGE CREATION
+	// GENERATING IMAGE
 	// --------------------------------------------------------------------------------------------
 	
 	$w = 300;
@@ -153,7 +153,16 @@
 		imagecopy($img, $profileimg,3,3,0,0,64,64);
 		// imagefilter($img, IMG_FILTER_GRAYSCALE);
 	}
-	else if($personastate == '1' && $gameid != '') // STATUS INGAME
+	else if((in_array($statusID, range(212, 218)) && $gameextrainfo != '' ) || (in_array($statusID, range(441, 447)) && $gameextrainfo == '' )) // STATUS MAKING MAP IN SOURCE SDK
+	{
+		$background=imagecreatefrompng($av_bg_ingame);
+		imagecopy($img,$background,0,0,0,0,300,100);
+		imagettftext($img, 16, 0, 76, 24, $av_text_color_ingame, $av_font3, $personaname);
+		imagettftext($img, 12, 0, 74, 42, $av_text_color_ingame, $av_font2, "is making map with");
+		imagettftext($img, 12, 0, 74, 60, $av_text_color_ingame, $av_font2, "Hammer Editor (Source SDK)");
+		imagecopy($img, $profileimg,3,3,0,0,64,64);
+	}
+	else if($personastate == ( '1' || '2' || '3' || '4' || '5' || '6' ) && $gameid != '') // STATUS INGAME
 	{
 		($gameextrainfo != '' ? $state = 'is playing now in' : $state = 'is dropping cards right now');
 		$background=imagecreatefrompng($av_bg_ingame);
@@ -180,14 +189,10 @@
 		imagecopy($img, $profileimg,3,3,0,0,64,64);
 	}
 
-	// --------------------------------------------------------------------------------------------
-	// OUTPUT
-	// --------------------------------------------------------------------------------------------
-	
-	$link_address='http://YOUR-WEBSITE.COM/sig.png';
 	imagepng($img, 'sig.png');
-	echo "<br>- You can find your image here<br><br><a href='$link_address'>$link_address</a>";
-	exit;
+	echo "- Image generated:<br><a href='http://av.execute.run/sig/sig.png'>http://av.execute.run/sig/sig.png</a><br><br>";
+	
+	exit; // exit the script to avoid image errors.
 ?>
 
 </body>

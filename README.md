@@ -1,4 +1,19 @@
-# Personal-Steam-Signature
+# Personal-Steam-Signature (MIT license)
 This PHP script generates image (PNG) with Steam status.  
-This is personal script for just one user. You can host it on your hosting.  
-This is not complete project. I have some ideas, but.... not now. If you want to work with this - check lines: 12, 13, 187. Use CRON jobs to generate signature.
+This is personal script for just one user.  
+Use CRON to execute this file.  
+
+Important steps:  
+- Set Your Steam API key in line 12 // try to dont use mine because I will delete it soon
+- Set Your Steam Community ID in line 13
+
+Would be nice to change this (if you planning to run this script from address bar in your browser):
+- checkk lines 120, 125, 193
+
+You can remove it if you want (if you dont work with Valve's Hammer Editor):
+- lines from 156 to 164
+
+## From Author:
+I created this script as first (or second) PHP project ever. This was my start with programming (Thanks Simon for all your help). I cant give you a word that everything will work for you. It worked for me pretty well, but you might encounter problems, with Paths maybe (check line 90).  
+This is not complete project. I abandoned this project long time ago and I will not work with it anymore.  
+Right now im working with C# and NodeJS.

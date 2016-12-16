@@ -6,6 +6,7 @@ Use CRON to execute this file.
 Important steps:  
 - Set Your Steam API key in line 12 // try to dont use mine because I will delete it soon
 - Set Your Steam Community ID in line 13
+- If you will put this script into your webhosting remember to set CHMOD 0770 for .php file (to prevent random people from executting this file)  
 
 Would be nice to change this (if you planning to run this script from address bar in your browser):
 - checkk lines 120, 125, 193

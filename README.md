@@ -1,4 +1,7 @@
-# Personal Steam Signature Generator (MIT license)
+# Personal Steam Signature Generator
+
+>I created this script a long time ago. Please don't use it, unless you're just curious. Maybe someday, if I feel like playing with PHP again, I'll improve it and adapt it to the newer versions of PHP. However, that might never happen.
+
 This PHP script generates image (PNG) with Steam status.  
 This is personal script for just one user.  
 Use CRON to execute this script.  

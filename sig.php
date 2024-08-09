@@ -1,183 +1,193 @@
-<?php
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Steam Signature</title>
+</head>
+<body>
+    <?php
 
-// This is my attempt to create a new version of this script.
-// First script was created almost 10 years ago and might not work anymore.
-// To be honest I don't like PHP at all, I don't know this language, I prefer JS/TS, but my curiosity leads me here.
-// So I used Claude.ai to help me with the code to make it modern and more professional.
-// This code have some errors to fix, needs to be tweaked and improved.
-// Maybe someday I will finish it, but for now I have more interesting projects to work on.
+    // This is my attempt to create a new version of this script.
+    // First script was created almost 10 years ago and might not work anymore.
+    // To be honest I don't like PHP at all, I don't know this language, I prefer JS/TS, but my curiosity leads me here.
+    // So I used Claude.ai to help me with the code to make it modern and more professional.
+    // This code have some errors to fix, needs to be tweaked and improved.
+    // Maybe someday I will finish it, but for now I have more interesting projects to work on.
 
-// Set the timezone
-date_default_timezone_set('UTC');
+    define('repository_url', 'https://github.com/Avaray/personal-steam-signature');
+    
+    $config = require 'config.php';
 
-// --------------------------------------------------------------------------------------------
-// STEAM API - GETTING INFORMATION
-// --------------------------------------------------------------------------------------------
+    if (empty($config['steam_id'])) {
+        die('ERROR: Steam ID not specified in config.php');
+    }
 
-// This API key does not work anymore, you need to get your own from https://steamcommunity.com/dev/apikey
-define('STEAM_APIKEY', '5A864F6A173036BD6D458B23198AF1D5');
-define('STEAM_PROFILEID', '76561198037068779');
-define('STEAM_BASEURL', 'http://api.steampowered.com');
-define('STEAM_INTERFACE_USER', 'ISteamUser');
-define('STEAM_FORMAT', 'json');
-define('STATUS_FILE', 'sig.txt');
+    if (empty($config['steam_api_key'])) {
+        die('ERROR: Steam API key not specified in config.php');
+    }
 
-function get_request_url()
-{
-    $domain = $_SERVER['SERVER_NAME'];
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $request = $_SERVER['REQUEST_URI'];
-    return $protocol . '://' . $domain . $request;
-}
+    define('STEAM_APIKEY', $config['steam_api_key']);
+    define('STEAM_ID', $config['steam_id']);
 
-function get_player_summaries()
-{
-    $url = STEAM_BASEURL . '/' . STEAM_INTERFACE_USER . '/GetPlayerSummaries/v2/';
-    $params = [
-        'key' => STEAM_APIKEY,
-        'steamids' => STEAM_PROFILEID,
-        'format' => STEAM_FORMAT
+    echo 'xD';
+
+    // --------------------------------------------------------------------------------------------
+    // STEAM API - GETTING INFORMATION
+    // --------------------------------------------------------------------------------------------
+
+    $base_url = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/';
+    $api_url = "{$base_url}?key={$config['steam_api_key']}&steamids={$config['steam_id']}";
+    echo $api_url;
+
+    function get_player_summaries($api_url)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        if ($response === false) {
+            return null;
+        }
+        return json_decode($response, true);
+    }
+
+    $summary = get_player_summaries($api_url);
+    $summary = isset($summary['response']['players'][0]) ? $summary['response']['players'][0] : null;
+    if (!$summary) {
+        die('ERROR: Could not retrieve info');
+    }
+
+    $personaname = strtoupper(isset($summary['personaname']) ? $summary['personaname'] : '');
+    $avatar = isset($summary['avatarmedium']) ? $summary['avatarmedium'] : '';
+    $personastate = isset($summary['personastate']) ? $summary['personastate'] : '';
+    $gameextrainfo = isset($summary['gameextrainfo']) ? $summary['gameextrainfo'] : '';
+    $gameid = isset($summary['gameid']) ? $summary['gameid'] : '';
+
+    echo $personaname;
+    echo $personastate;
+
+    // Until now everything works
+    exit();
+
+    // --------------------------------------------------------------------------------------------
+    // IMAGE GENERATION SETTINGS
+    // --------------------------------------------------------------------------------------------
+
+    chdir(dirname(__FILE__));
+
+    $img = imagecreatetruecolor(470, 70);
+
+    $profileimg = @imagecreatefromstring(file_get_contents($avatar));
+
+    $backgrounds = [
+        'offline' => 'img/bg_offline.png',
+        'ingame' => 'img/bg_ingame.png',
+        'online' => 'img/bg_online.png',
+        'error' => 'img/bg_error.png'
     ];
-    $url .= '?' . http_build_query($params);
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    $response = curl_exec($ch);
-    curl_close($ch);
+    $avatars = [
+        'error' => 'img/avatar_error.png'
+    ];
 
-    if ($response === false) {
-        return null;
+    $fonts = [
+        'regular' => 'font/RobotoCondensed-Regular.ttf',
+        'italic' => 'font/RobotoCondensed-Italic.ttf',
+        'bold_italic' => 'font/RobotoCondensed-BoldItalic.ttf'
+    ];
+
+    $text_colors = [
+        'offline' => imagecolorallocate($img, 190, 190, 190),
+        'ingame' => imagecolorallocate($img, 238, 238, 238),
+        'online' => imagecolorallocate($img, 238, 238, 238)
+    ];
+
+    // --------------------------------------------------------------------------------------------
+    // CHECK USER STATUS
+    // --------------------------------------------------------------------------------------------
+
+    $statusID = $gameid + $personastate;
+    $statusID_prev = file_exists(STATUS_FILE) ? explode("\n", file_get_contents(STATUS_FILE)) : [];
+
+    if (isset($statusID_prev[0]) && $statusID_prev[0] == $statusID) {
+        echo "- Nothing changed.<br><br>Current image:<br><a href='sig.png'>sig.png</a>";
+        exit;
+    } else {
+        file_put_contents(STATUS_FILE, $statusID);
+        echo "- New status saved to text file (sig.txt)<br><br>";
     }
-    return json_decode($response, true);
-}
 
-$summary = get_player_summaries();
-$summary = isset($summary['response']['players'][0]) ? $summary['response']['players'][0] : null;
-if (!$summary) {
-    die('ERROR: could not retrieve info');
-}
+    // --------------------------------------------------------------------------------------------
+    // GENERATING IMAGE
+    // --------------------------------------------------------------------------------------------
 
-$personaname = strtoupper(isset($summary['personaname']) ? $summary['personaname'] : '');
-$avatar = isset($summary['avatarmedium']) ? $summary['avatarmedium'] : '';
-$personastate = isset($summary['personastate']) ? $summary['personastate'] : '';
-$gameextrainfo = isset($summary['gameextrainfo']) ? $summary['gameextrainfo'] : '';
-$gameid = isset($summary['gameid']) ? $summary['gameid'] : '';
+    $w = 300;
+    $h = 70;
 
-// --------------------------------------------------------------------------------------------
-// IMAGE GENERATION SETTINGS
-// --------------------------------------------------------------------------------------------
+    $img = imagecreatetruecolor($w, $h);
 
-chdir(dirname(__FILE__));
-
-$img = imagecreatetruecolor(470, 70);
-
-$profileimg = @imagecreatefromstring(file_get_contents($avatar));
-
-$backgrounds = [
-    'offline' => 'img/bg_offline.png',
-    'ingame' => 'img/bg_ingame.png',
-    'online' => 'img/bg_online.png',
-    'error' => 'img/bg_error.png'
-];
-
-$avatars = [
-    'error' => 'img/avatar_error.png'
-];
-
-$fonts = [
-    'regular' => 'font/RobotoCondensed-Regular.ttf',
-    'italic' => 'font/RobotoCondensed-Italic.ttf',
-    'bold_italic' => 'font/RobotoCondensed-BoldItalic.ttf'
-];
-
-$text_colors = [
-    'offline' => imagecolorallocate($img, 190, 190, 190),
-    'ingame' => imagecolorallocate($img, 238, 238, 238),
-    'online' => imagecolorallocate($img, 238, 238, 238)
-];
-
-// --------------------------------------------------------------------------------------------
-// CHECK USER STATUS
-// --------------------------------------------------------------------------------------------
-
-$statusID = $gameid + $personastate;
-$statusID_prev = file_exists(STATUS_FILE) ? explode("\n", file_get_contents(STATUS_FILE)) : [];
-
-if (isset($statusID_prev[0]) && $statusID_prev[0] == $statusID) {
-    echo "- Nothing changed.<br><br>Current image:<br><a href='sig.png'>sig.png</a>";
-    exit;
-} else {
-    file_put_contents(STATUS_FILE, $statusID);
-    echo "- New status saved to text file (sig.txt)<br><br>";
-}
-
-// --------------------------------------------------------------------------------------------
-// GENERATING IMAGE
-// --------------------------------------------------------------------------------------------
-
-$w = 300;
-$h = 70;
-
-$img = imagecreatetruecolor($w, $h);
-
-function load_image($path)
-{
-    $image = @imagecreatefrompng($path);
-    if (!$image) {
-        die("ERROR: Could not load image $path");
+    function load_image($path)
+    {
+        $image = @imagecreatefrompng($path);
+        if (!$image) {
+            die("ERROR: Could not load image $path");
+        }
+        return $image;
     }
-    return $image;
-}
 
-if (!$summary) {
-    $background = load_image($backgrounds['error']);
-    imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-    $avatar_error = load_image($avatars['error']);
-    imagecopy($img, $avatar_error, 3, 3, 0, 0, 64, 64);
-    imagettftext($img, 12, 0, 74, 42, $text_colors['offline'], $fonts['italic'], "ERROR: could not retrieve info");
-} else {
-    switch ($personastate) {
-        case 0:
-            $background = load_image($backgrounds['offline']);
-            imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-            imagettftext($img, 16, 0, 76, 24, $text_colors['offline'], $fonts['bold_italic'], $personaname);
-            imagettftext($img, 12, 0, 74, 42, $text_colors['offline'], $fonts['italic'], "OFFLINE");
-            break;
-        case 1:
-            if ($gameid == 0) {
-                $state = 'is online';
-            } elseif ($gameextrainfo) {
-                $state = 'is playing';
-            } else {
-                $state = 'is playing a game';
-            }
-            $background = load_image($backgrounds['ingame']);
-            imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-            imagettftext($img, 16, 0, 76, 24, $text_colors['ingame'], $fonts['bold_italic'], $personaname);
-            imagettftext($img, 12, 0, 74, 42, $text_colors['ingame'], $fonts['italic'], $state);
-            imagettftext($img, 12, 0, 74, 60, $text_colors['ingame'], $fonts['italic'], $gameextrainfo);
-            break;
-        default:
-            $states = [
-                1 => 'ONLINE',
-                2 => 'ONLINE (Busy)',
-                3 => 'ONLINE (Away)',
-                4 => 'ONLINE (Snooze)',
-                5 => 'Looking to Trade',
-                6 => 'Looking to Play'
-            ];
-            $state = isset($states[$personastate]) ? $states[$personastate] : 'ONLINE';
-            $background = load_image($backgrounds['online']);
-            imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-            imagettftext($img, 16, 0, 76, 24, $text_colors['online'], $fonts['bold_italic'], $personaname);
-            imagettftext($img, 12, 0, 74, 42, $text_colors['online'], $fonts['italic'], $state);
+    if (!$summary) {
+        $background = load_image($backgrounds['error']);
+        imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
+        $avatar_error = load_image($avatars['error']);
+        imagecopy($img, $avatar_error, 3, 3, 0, 0, 64, 64);
+        imagettftext($img, 12, 0, 74, 42, $text_colors['offline'], $fonts['italic'], "ERROR: could not retrieve info");
+    } else {
+        switch ($personastate) {
+            case 0:
+                $background = load_image($backgrounds['offline']);
+                imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
+                imagettftext($img, 16, 0, 76, 24, $text_colors['offline'], $fonts['bold_italic'], $personaname);
+                imagettftext($img, 12, 0, 74, 42, $text_colors['offline'], $fonts['italic'], "OFFLINE");
+                break;
+            case 1:
+                if ($gameid == 0) {
+                    $state = 'is online';
+                } elseif ($gameextrainfo) {
+                    $state = 'is playing';
+                } else {
+                    $state = 'is playing a game';
+                }
+                $background = load_image($backgrounds['ingame']);
+                imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
+                imagettftext($img, 16, 0, 76, 24, $text_colors['ingame'], $fonts['bold_italic'], $personaname);
+                imagettftext($img, 12, 0, 74, 42, $text_colors['ingame'], $fonts['italic'], $state);
+                imagettftext($img, 12, 0, 74, 60, $text_colors['ingame'], $fonts['italic'], $gameextrainfo);
+                break;
+            default:
+                $states = [
+                    1 => 'ONLINE',
+                    2 => 'ONLINE (Busy)',
+                    3 => 'ONLINE (Away)',
+                    4 => 'ONLINE (Snooze)',
+                    5 => 'Looking to Trade',
+                    6 => 'Looking to Play'
+                ];
+                $state = isset($states[$personastate]) ? $states[$personastate] : 'ONLINE';
+                $background = load_image($backgrounds['online']);
+                imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
+                imagettftext($img, 16, 0, 76, 24, $text_colors['online'], $fonts['bold_italic'], $personaname);
+                imagettftext($img, 12, 0, 74, 42, $text_colors['online'], $fonts['italic'], $state);
+        }
+        imagecopy($img, $profileimg, 3, 3, 0, 0, 64, 64);
     }
-    imagecopy($img, $profileimg, 3, 3, 0, 0, 64, 64);
-}
 
-imagepng($img, 'sig.png');
-imagedestroy($img);
+    imagepng($img, 'sig.png');
+    imagedestroy($img);
 
-echo "- Image generated:<br><a href='sig.png'>sig.png</a><br><br>";
+    echo "- Image generated:<br><a href='sig.png'>sig.png</a><br><br>";
+    ?>
+</body>
+</html>

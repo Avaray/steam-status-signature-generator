@@ -1,4 +1,4 @@
-# Personal Steam Signature Generator
+# 😎 Personal Steam Signature Generator
 
 <!-- Remember to change branches in badges after PR to main -->
 
@@ -9,13 +9,13 @@ This is personal script for just one user.
 
 Use [CRON](https://cronitor.io/guides) to execute this script.
 
-# Requirements
+# # Requirements
 
 - [PHP](https://www.php.net/) (version not specified yet; I used 8.3.1, but it should work on 7.X too).
 - [GD](https://github.com/libgd/libgd) extension (version 2.X). You probably have it in your PHP extensions directory. You will need to enable it. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information.
 - [CURL](https://curl.se/) extension. Same case as with GD extension. Probably all you need to do is to enable it in your PHP configuration file.
 
-# Configuration
+# # Configuration
 
 You need to modify `config.php` file.
 
@@ -31,7 +31,7 @@ return [
 ];
 ```
 
-# TODO's
+## # TODO's
 
 - [ ] Re-write the entire script.
 - [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that).

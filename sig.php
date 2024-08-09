@@ -33,7 +33,6 @@
 
     $base_url = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/';
     $api_url = "{$base_url}?key={$config['steam_api_key']}&steamids={$config['steam_id']}";
-    echo $api_url;
 
     function get_player_summaries($api_url)
     {

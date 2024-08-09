@@ -1,5 +1,12 @@
 <?php
 
+// This is my attempt to create a new version of this script.
+// First script was created almost 10 years ago and might not work anymore.
+// To be honest I don't like PHP at all, I don't know this language, I prefer JS/TS, but my curiosity leads me here.
+// So I used Claude.ai to help me with the code to make it modern and more professional.
+// This code have some errors to fix, needs to be tweaked and improved.
+// Maybe someday I will finish it, but for now I have more interesting projects to work on.
+
 // Set the timezone
 date_default_timezone_set('UTC');
 
@@ -7,6 +14,7 @@ date_default_timezone_set('UTC');
 // STEAM API - GETTING INFORMATION
 // --------------------------------------------------------------------------------------------
 
+// This API key does not work anymore, you need to get your own from https://steamcommunity.com/dev/apikey
 define('STEAM_APIKEY', '5A864F6A173036BD6D458B23198AF1D5');
 define('STEAM_PROFILEID', '76561198037068779');
 define('STEAM_BASEURL', 'http://api.steampowered.com');

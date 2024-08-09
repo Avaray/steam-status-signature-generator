@@ -4,6 +4,11 @@ This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org
 This is personal script for just one user.  
 Use [CRON](https://cronitor.io/guides) to execute this script.
 
+# Requirements
+
+- PHP version not specified yet (I used 8.3.1)
+- [GD](https://github.com/libgd/libgd) extension (version 2.X)
+
 # TODO's
 
 - [ ] Fix visible errors

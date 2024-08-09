@@ -27,9 +27,6 @@
         die('ERROR: Steam API key not specified in config.php');
     }
 
-    define('STEAM_APIKEY', $config['steam_api_key']);
-    define('STEAM_ID', $config['steam_id']);
-
     // --------------------------------------------------------------------------------------------
     // STEAM API - GETTING INFORMATION
     // --------------------------------------------------------------------------------------------

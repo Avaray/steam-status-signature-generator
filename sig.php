@@ -49,6 +49,16 @@
     }
 
     $summary = get_player_summaries($api_url);
+
+    if (!isset($summary['response']['players'][0])) {
+        $status_url = 'https://steamstat.us/';
+        die("ERROR: Could not retrieve info. Check your API key or visit {$status_url} to check Steam services status.");
+    }
+
+    if (empty($summary['response']['players'])) {
+        die('ERROR: Invalid Steam Community ID. Must be valid SteamID64.');
+    }
+
     $summary = isset($summary['response']['players'][0]) ? $summary['response']['players'][0] : null;
     if (!$summary) {
         die('ERROR: Could not retrieve info');
@@ -59,10 +69,7 @@
     $personastate = isset($summary['personastate']) ? $summary['personastate'] : '';
     $gameextrainfo = isset($summary['gameextrainfo']) ? $summary['gameextrainfo'] : '';
     $gameid = isset($summary['gameid']) ? $summary['gameid'] : '';
-
-    echo $personaname;
-    echo $personastate;
-
+    
     // Until now everything works
     exit();
 
@@ -103,14 +110,15 @@
     // CHECK USER STATUS
     // --------------------------------------------------------------------------------------------
 
+    $status_file = 'status.txt';
     $statusID = $gameid + $personastate;
-    $statusID_prev = file_exists(STATUS_FILE) ? explode("\n", file_get_contents(STATUS_FILE)) : [];
+    $statusID_prev = file_exists($status_file) ? explode("\n", file_get_contents($status_file)) : [];
 
     if (isset($statusID_prev[0]) && $statusID_prev[0] == $statusID) {
         echo "- Nothing changed.<br><br>Current image:<br><a href='sig.png'>sig.png</a>";
         exit;
     } else {
-        file_put_contents(STATUS_FILE, $statusID);
+        file_put_contents($status_file, $statusID);
         echo "- New status saved to text file (sig.txt)<br><br>";
     }
 

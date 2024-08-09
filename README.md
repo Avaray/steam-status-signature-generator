@@ -19,11 +19,14 @@ Use [CRON](https://cronitor.io/guides) to execute this script.
 
 You need to modify `config.php` file.
 
+1. Set `steam_api_key`. You can get it [here](prestashop/github-action-php-lint).
+2. Set `steam_id`. You can get it from your Steam profile URL. It's 17 digits long number at the end of the URL. You can use also [this](https://steamid.info/) non-official website to get it.
+
 ```php
 <?php
 return [
-    'steam_id' => 'XXXXXXXXXXXXXXXXX',
     'steam_api_key' => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    'steam_id' => 'XXXXXXXXXXXXXXXXX',
     'capitalized_personaname' => false,
 ];
 ```

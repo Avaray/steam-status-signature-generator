@@ -1,1 +1,5 @@
 .env
+config*
+.php*
+sig.png
+sig.txt

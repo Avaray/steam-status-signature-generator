@@ -30,8 +30,6 @@
     define('STEAM_APIKEY', $config['steam_api_key']);
     define('STEAM_ID', $config['steam_id']);
 
-    echo 'xD';
-
     // --------------------------------------------------------------------------------------------
     // STEAM API - GETTING INFORMATION
     // --------------------------------------------------------------------------------------------
@@ -80,7 +78,7 @@
 
     $img = imagecreatetruecolor(470, 70);
 
-    $profileimg = @imagecreatefromstring(file_get_contents($avatar));
+    $profile_image = @imagecreatefromstring(file_get_contents($avatar));
 
     $backgrounds = [
         'offline' => 'img/bg_offline.png',
@@ -181,7 +179,7 @@
                 imagettftext($img, 16, 0, 76, 24, $text_colors['online'], $fonts['bold_italic'], $personaname);
                 imagettftext($img, 12, 0, 74, 42, $text_colors['online'], $fonts['italic'], $state);
         }
-        imagecopy($img, $profileimg, 3, 3, 0, 0, 64, 64);
+        imagecopy($img, $profile_image, 3, 3, 0, 0, 64, 64);
     }
 
     imagepng($img, 'sig.png');

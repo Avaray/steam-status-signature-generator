@@ -1,7 +1,12 @@
 # Personal Steam Signature Generator
 
-This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) image with status of user on [Steam](https://store.steampowered.com/).
-This is personal script for just one user.  
+<!-- Remember to change branches in badges after PR to main -->
+
+[![PHP 5.6](https://github.com/Avaray/personal-steam-signature/actions/workflows/test-php5.yml/badge.svg?branch=making-it-modern)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test-php5.yml) [![PHP 7.4](https://github.com/Avaray/personal-steam-signature/actions/workflows/test-php7.yml/badge.svg?branch=making-it-modern)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test-php7.yml)
+
+This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) image with status of user on [Steam](https://store.steampowered.com/).  
+This is personal script for just one user.
+
 Use [CRON](https://cronitor.io/guides) to execute this script.
 
 # Requirements
@@ -12,8 +17,5 @@ Use [CRON](https://cronitor.io/guides) to execute this script.
 
 # TODO's
 
-- [ ] Fix visible errors.
-- [ ] Make it PHP 7-8 friendly (try to use newest things).
-- [ ] Fix user status logic (status is not always correct).
+- [ ] Keep re-writing the entire script.
 - [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that).
-- [ ] Read sensitive data (like Steam API key) from file that is not accessible from web (in case when they were not passed in URL).

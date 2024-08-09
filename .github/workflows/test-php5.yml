@@ -1,0 +1,13 @@
+name: PHP 5.6
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: PHP 5.6 syntax check
+        uses: prestashop/github-action-php-lint/5.6@v1

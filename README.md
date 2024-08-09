@@ -7,6 +7,7 @@ Use [CRON](https://cronitor.io/guides) to execute this script.
 # TODO's
 
 - [ ] Fix visible errors
+- [ ] Make it PHP 7-8 friendly (try to use newest things)
 - [ ] Fix user status logic (status is not always correct)
 - [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that)
 - [ ] Read sensitive data (like Steam API key) from file that is not accessible from web (in case when they were not passed in URL)

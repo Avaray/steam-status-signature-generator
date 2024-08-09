@@ -140,6 +140,8 @@ $max_text_width = max(
     get_text_width($gameextrainfo, $font_name, $font_size_default)
 );
 
+echo 'Until now everything is working fine.';
+
 // --------------------------------------------------------------------------------------------
 // CHECK USER STATUS
 // --------------------------------------------------------------------------------------------

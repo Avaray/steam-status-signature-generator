@@ -3,3 +3,4 @@ config*
 .php*
 sig.png
 sig.txt
+status/

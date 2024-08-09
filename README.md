@@ -34,4 +34,4 @@ return [
 ## # TODO's
 
 - [ ] Re-write the entire script.
-- [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that).
+- [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that) or as [parameters](https://www.php.net/manual/en/reserved.variables.argv.php).

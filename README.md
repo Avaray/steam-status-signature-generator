@@ -30,5 +30,5 @@ return [
 
 # TODO's
 
-- [ ] Keep re-writing the entire script.
+- [ ] Re-write the entire script.
 - [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that).

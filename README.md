@@ -6,8 +6,8 @@ Use [CRON](https://cronitor.io/guides) to execute this script.
 
 # Requirements
 
-- PHP version not specified yet (I used 8.3.1)
-- [GD](https://github.com/libgd/libgd) extension (version 2.X)
+- PHP version not specified yet (I used 8.3.1, but it should work on 7.X too)
+- [GD](https://github.com/libgd/libgd) extension (version 2.X). You probably have it in your PHP extensions directory. You will need to enable it. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information.
 
 # TODO's
 

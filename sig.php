@@ -86,7 +86,7 @@ if (!$summary) {
     die('ERROR: Could not retrieve info');
 }
 
-$personaname = strtoupper(isset($summary['personaname']) ? $summary['personaname'] : '');
+$personaname = isset($summary['personaname']) ? $summary['personaname'] : '';
 $avatar = isset($summary['avatarmedium']) ? $summary['avatarmedium'] : '';
 $personastate = isset($summary['personastate']) ? $summary['personastate'] : '';
 $gameextrainfo = isset($summary['gameextrainfo']) ? $summary['gameextrainfo'] : '';
@@ -104,9 +104,9 @@ function get_text_width($text, $font, $size)
     return abs($bbox[2] - $bbox[0]);
 }
 
-$img = imagecreatetruecolor(470, 70);
-
-$profile_image = @imagecreatefromstring(file_get_contents($avatar));
+if ($config['capitalized_personaname']) {
+    $personaname = $personaname;
+}
 
 $backgrounds = [
     'offline' => 'img/bg_offline.png',
@@ -125,110 +125,100 @@ $fonts = [
     'bold_italic' => 'font/RobotoCondensed-BoldItalic.ttf',
 ];
 
-$text_colors = [
-    'offline' => imagecolorallocate($img, 190, 190, 190),
-    'ingame' => imagecolorallocate($img, 238, 238, 238),
-    'online' => imagecolorallocate($img, 238, 238, 238),
-];
-
+$avatar_size = 64;
 $font_name = $fonts['bold_italic'];
-$font_size_default = 16;
 $font_size_personaname = 24;
+$font_size_default = 16;
 
 $max_text_width = max(
     get_text_width($personaname, $font_name, $font_size_personaname),
     get_text_width($gameextrainfo, $font_name, $font_size_default)
 );
 
-echo 'Until now everything is working fine.';
+$padding = 10;
+$image_width = $avatar_size + $max_text_width + $padding * 4;
+$image_height = $padding * 3 + $font_size_personaname + $font_size_default;
+
+$img = imagecreatetruecolor($image_width, $image_height);
+
+$text_colors = [
+    'offline' => imagecolorallocate($img, 190, 190, 190),
+    'ingame' => imagecolorallocate($img, 238, 238, 238),
+    'online' => imagecolorallocate($img, 238, 238, 238),
+];
+
+$avatar_start = $padding + $avatar_size;
+$personaname_start = $padding * 2 + $avatar_size + $font_size_personaname;
+$personastate_start = $padding + $personaname_start + $font_size_default;
 
 // --------------------------------------------------------------------------------------------
 // CHECK USER STATUS
 // --------------------------------------------------------------------------------------------
 
-// $status_file = 'status.txt';
-// $statusID = $gameid + $personastate;
-// $statusID_prev = file_exists($status_file) ? explode("\n", file_get_contents($status_file)) : [];
+$status_prev = null;
+$status_now = "{$gameid}-{$personastate}-{$personaname}";
+$status_file_path = "status/{$config['steam_id']}";
 
-// if (isset($statusID_prev[0]) && $statusID_prev[0] == $statusID) {
-//     echo "- Nothing changed.<br><br>Current image:<br><a href='sig.png'>sig.png</a>";
-//     exit;
-// } else {
-//     file_put_contents($status_file, $statusID);
-//     echo "New status saved to text file {$status_file}";
-// }
+if (!file_exists($status_file_path)) {
+    file_put_contents($status_file_path, '0');
+} else {
+    $status_prev = file_exists('status.txt') ? file_get_contents('status.txt') : '';
+}
+
+if ($status_prev === $status_now) {
+    die('Nothing changed.');
+} else {
+    file_put_contents($status_file_path, $status_now);
+}
+
+echo 'Until now everything should be working fine.';
+
+# Rest of work for tomorrow
 
 // --------------------------------------------------------------------------------------------
 // GENERATING IMAGE
 // --------------------------------------------------------------------------------------------
 
-exit();
+$profile_image = @imagecreatefromstring(file_get_contents($avatar));
 
-$padding = 10;
-$image_width = $max_text_width + $padding;
-$image_height = 70;
-
-$img = imagecreatetruecolor($image_width, $image_height);
-
-function load_image($path)
+function generate_image($state)
 {
-    $image = @imagecreatefrompng($path);
-    if (!$image) {
-        die("ERROR: Could not load image $path");
-    }
-    return $image;
+    $background = @imagecreatefrompng($backgrounds[$state]);
+    imagecopy($img, $background, 0, 0, 0, 0, $image_width, $image_height);
+    imagettftext($img, $font_size_personaname, 0, $padding, $personaname_start, $text_colors[$state], $fonts['bold_italic'], $personaname);
+    imagettftext($img, $font_size_default, 0, $padding, $personastate_start, $text_colors[$state], $fonts['italic'], $state);
+    // if ($gameextrainfo) {
+    //     imagettftext($img, $font_size_default, 0, $padding, $personastate_start + $font_size_default + $padding, $text_colors[$state], $fonts['italic'], $gameextrainfo);
+    // }
+    return $img;
 }
 
-if (!$summary) {
-    $background = load_image($backgrounds['error']);
-    imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-    $avatar_error = load_image($avatars['error']);
-    imagecopy($img, $avatar_error, 3, 3, 0, 0, 64, 64);
-    imagettftext($img, 12, 0, 74, 42, $text_colors['offline'], $fonts['italic'], "ERROR: could not retrieve info");
-} else {
-    switch ($personastate) {
-        case 0:
-            $background = load_image($backgrounds['offline']);
-            imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-            imagettftext($img, 16, 0, 76, 24, $text_colors['offline'], $fonts['bold_italic'], $personaname);
-            imagettftext($img, 12, 0, 74, 42, $text_colors['offline'], $fonts['italic'], "OFFLINE");
-            break;
-        case 1:
-            if ($gameid == 0) {
-                $state = 'is online';
-            } elseif ($gameextrainfo) {
-                $state = 'is playing';
-            } else {
-                $state = 'is playing a game';
-            }
-            $background = load_image($backgrounds['ingame']);
-            imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-            imagettftext($img, 16, 0, 76, 24, $text_colors['ingame'], $fonts['bold_italic'], $personaname);
-            imagettftext($img, 12, 0, 74, 42, $text_colors['ingame'], $fonts['italic'], $state);
-            imagettftext($img, 12, 0, 74, 60, $text_colors['ingame'], $fonts['italic'], $gameextrainfo);
-            break;
-        default:
-            $states = [
-                1 => 'ONLINE',
-                2 => 'ONLINE (Busy)',
-                3 => 'ONLINE (Away)',
-                4 => 'ONLINE (Snooze)',
-                5 => 'Looking to Trade',
-                6 => 'Looking to Play',
-            ];
-            $state = isset($states[$personastate]) ? $states[$personastate] : 'ONLINE';
-            $background = load_image($backgrounds['online']);
-            imagecopy($img, $background, 0, 0, 0, 0, $w, $h);
-            imagettftext($img, 16, 0, 76, 24, $text_colors['online'], $fonts['bold_italic'], $personaname);
-            imagettftext($img, 12, 0, 74, 42, $text_colors['online'], $fonts['italic'], $state);
-    }
-    imagecopy($img, $profile_image, 3, 3, 0, 0, 64, 64);
+// switch ($personastate) {
+//     case 0:
+//         generate_image('offline');
+//         break;
+//     case 1:
+//         generate_image('ingame');
+//         break;
+//     default:
+//         generate_image('online');
+//         break;
+// }
+
+switch ($personastate) {
+    case 1:
+        $background = @imagecreatefrompng($backgrounds['offline']);
+        imagecopy($img, $background, 0, 0, 0, 0, $image_width, $image_height);
+        imagettftext($img, $font_size_personaname, 0, $padding, $personaname_start, $text_colors['offline'], $fonts['bold_italic'], $personaname);
+        imagettftext($img, $font_size_default, 0, $padding, $personastate_start, $text_colors['offline'], $fonts['italic'], 'OFFLINE');
+        break;
 }
 
+// imagecopy($img, $profile_image, $padding, $padding, 20, 20, $avatar_size, $avatar_size);
+
+// save image
 imagepng($img, 'sig.png');
-imagedestroy($img);
 
-echo "- Image generated:<br><a href='sig.png'>sig.png</a><br><br>";
 ?>
 </body>
 </html>

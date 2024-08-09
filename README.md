@@ -15,6 +15,19 @@ Use [CRON](https://cronitor.io/guides) to execute this script.
 - [GD](https://github.com/libgd/libgd) extension (version 2.X). You probably have it in your PHP extensions directory. You will need to enable it. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information.
 - [CURL](https://curl.se/) extension. Same case as with GD extension. Probably all you need to do is to enable it in your PHP configuration file.
 
+# Configuration
+
+You need to modify `config.php` file.
+
+```php
+<?php
+return [
+    'steam_id' => 'XXXXXXXXXXXXXXXXX',
+    'steam_api_key' => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    'capitalized_personaname' => false,
+];
+```
+
 # TODO's
 
 - [ ] Keep re-writing the entire script.

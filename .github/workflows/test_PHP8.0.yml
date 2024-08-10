@@ -1,4 +1,4 @@
-name: PHP 8.3
+name: PHP 8.0
 
 on: [push, pull_request]
 
@@ -9,5 +9,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: PHP 8.3 syntax check
-        uses: prestashop/github-action-php-lint/8.3@v1
+      - name: PHP 8.0 syntax check
+        uses: PrestaShopCorp/github-action-php-lint/8.0

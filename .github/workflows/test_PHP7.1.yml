@@ -1,0 +1,13 @@
+name: PHP 7.1
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: PHP 7.1 syntax check
+        uses: PrestaShopCorp/github-action-php-lint/7.1

@@ -7,6 +7,9 @@ jobs:
     name: Setup PHP
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup PHP
         uses: shivammathur/setup-php@main
         with:

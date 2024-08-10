@@ -1,4 +1,5 @@
 .env
+*.sh
 config*
 .php*
 sig.png
@@ -6,4 +7,3 @@ sig.txt
 status/
 IDEA*
 TODO*
-*.sh

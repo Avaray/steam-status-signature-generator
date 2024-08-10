@@ -9,7 +9,7 @@
 [![8.0](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.0.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.0.yml)
 [![8.3](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.3.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.3.yml)
 
-This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) image with status of user on [Steam](https://store.steampowered.com/).  
+This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) image with status of [Steam](https://store.steampowered.com/) user.  
 The width of the image adjusts to the length of the username or the length of the game title the user is currently playing. The height of the image is fixed.  
 Where you place the generated image is entirely up to you. In the past, people used to add such status images to their signatures on [internet forums](https://en.wikipedia.org/wiki/Internet_forum).
 

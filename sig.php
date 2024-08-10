@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Steam Signature</title>
+    <title>Personal Steam Signature Generator</title>
 </head>
 <body>
     <?php
@@ -18,14 +18,55 @@
 // Check if GD is installed
 $gd_functions = get_extension_funcs("gd");
 if (!$gd_functions) {
-    die("GD not installed.");
+    die("GD not installed. Please install/enable GD extension.");
 }
 
 // Check if cURL is installed
 $curl_functions = get_extension_funcs("curl");
 if (!$curl_functions) {
-    die("cURL not installed.");
+    die("cURL not installed. Please install/enable cURL extension.");
 }
+
+$steam_id = '';
+$steam_api_key = '';
+
+// Check if arguments are passed to the script
+if (!empty($argv)) {
+    $args = explode(',', $argv[0]);
+    foreach ($args as $arg) {
+        $arg = explode('=', $arg);
+        if (count($arg) === 2 && !empty($arg[1])) {
+            if ($arg[0] === 'steam_id') {
+                echo "Steam ID found in arguments.\n";
+                $steam_id = $arg[1];
+            } elseif ($arg[0] === 'steam_api_key') {
+                echo "Steam API Key found in arguments\n";
+                $steam_api_key = $arg[1];
+            }
+        }
+    }
+}
+
+// Check if arguments are passed in the URL
+// Server should be configured to allow URL query parameters
+// Otherwise array $_GET will be empty
+if (isset($_GET['steam_id']) && !empty($_GET['steam_id'])) {
+    echo "Steam ID found in the URL.\n";
+    $steam_id = $_GET['steam_id'];
+}
+
+if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key'])) {
+    echo "Steam API Key found in the URL.\n";
+    $steam_api_key = $_GET['steam_api_key'];
+}
+
+echo "Steam ID: {$steam_id}\n";
+echo "Steam API Key: {$steam_api_key}\n";
+
+// here I am currently, will continue later
+// im adding some code to find variables in various places
+
+exit();
 
 define('repository_url', 'https://github.com/Avaray/personal-steam-signature');
 

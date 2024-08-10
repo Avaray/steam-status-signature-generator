@@ -44,6 +44,7 @@ if (empty($config['steam_api_key'])) {
 // STEAM API - GETTING INFORMATION
 // --------------------------------------------------------------------------------------------
 
+// https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerSummaries
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $api_base_url = "{$protocol}://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/";
 $api_url = "{$api_base_url}?key={$config['steam_api_key']}&steamids={$config['steam_id']}";

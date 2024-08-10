@@ -1,4 +1,4 @@
-name: PHP 5.6
+name: 5.6
 
 on: [push, pull_request]
 
@@ -10,4 +10,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: PHP 5.6 syntax check
-        uses: PrestaShopCorp/github-action-php-lint/5.6
+        uses: PrestaShopCorp/github-action-php-lint/5.6@master

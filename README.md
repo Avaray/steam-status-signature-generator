@@ -10,10 +10,8 @@
 [![8.3](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.3.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.3.yml)
 
 This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) image with status of user on [Steam](https://store.steampowered.com/).  
-The width of the image adjusts to the length of the username or the length of the game title the user is currently playing.  
+The width of the image adjusts to the length of the username or the length of the game title the user is currently playing. The height of the image is fixed.  
 Where you place the generated image is entirely up to you. In the past, people used to add such status images to their signatures on [internet forums](https://en.wikipedia.org/wiki/Internet_forum).
-
-Currently this is personal script for just one user. It's quite possible that in the future, this script will support up to 100 users.
 
 ## Requirements
 
@@ -73,3 +71,4 @@ return [
 - [ ] Re-write the entire script.
 - [ ] Auto-creating of `config.php` file if it doesn't exist.
 - [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that) or as [parameters](https://www.php.net/manual/en/reserved.variables.argv.php).
+- [ ] Support for multiple users (up to 100).

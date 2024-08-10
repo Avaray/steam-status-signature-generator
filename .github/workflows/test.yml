@@ -1,0 +1,17 @@
+name: Test PHP 8.3
+
+on: [push, pull_request]
+
+jobs:
+  setup:
+    name: Setup PHP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@main
+        with:
+          php-version: '8.3'
+          extensions: gd, curl
+
+      - name: Lint main file
+        run: php -l sig.php

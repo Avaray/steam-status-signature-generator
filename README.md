@@ -15,7 +15,7 @@ Where you place the generated image is entirely up to you. In the past, people u
 
 ## Requirements
 
-- [PHP](https://www.php.net/) 5.6 or higher.
+- [PHP](https://www.php.net/) 5.4 or higher.
 - [GD](https://github.com/libgd/libgd) extension enabled (version 2.X). You probably have it in your PHP extensions directory. You will need to enable it. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information.
 - [CURL](https://curl.se/) extension. Same case as with GD extension. Probably all you need to do is to enable it in your PHP configuration file.
 
@@ -72,3 +72,4 @@ return [
 - [ ] Auto-creating of `config.php` file if it doesn't exist.
 - [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that) or as [parameters](https://www.php.net/manual/en/reserved.variables.argv.php).
 - [ ] Support for multiple users (up to 100).
+- [ ] Workflow for genrating example images.

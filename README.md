@@ -65,8 +65,7 @@ graph TD
     F --> G{Is something missing?}
     G -->|Yes| H[Check query parameters in URL]
     H --> I{Is something missing?}
-    I -->|Yes| J[Check if any required variable is missing]
-    J --> K{Is something still missing?}
+    I -->|Yes| K{Is something still missing?}
     K -->|Yes| L[Exit with error message]
     K -->|No| M[Generate images]
     I -->|No| M

@@ -113,9 +113,10 @@ if (!$curl_functions) {
 }
 
 // Check if Steam API Key is set in the environment variables
-if (empty($steam_api_key) && !empty(getenv('STEAM_API_KEY'))) {
+$steam_api_key_env = getenv('STEAM_API_KEY');
+if (empty($steam_api_key_env)) {
     msg("Steam API Key found in environment variables.");
-    $steam_api_key = getenv('STEAM_API_KEY');
+    $steam_api_key = $steam_api_key_env;
 }
 
 // Read arguments passed in the command line

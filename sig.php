@@ -183,19 +183,25 @@ if (empty($steam_api_key)) {
     msg("Steam API Key not found. Please set Steam API Key in the config file or pass it as an argument.", true);
 }
 
-function loadDatabase($filePath)
+// Function to load the database from a specified file
+function load_database($filePath)
 {
-    return file_exists($filePath) ? json_decode(file_get_contents($filePath), true) : null;
+    if (file_exists($filePath)) {
+        $database = json_decode(file_get_contents($filePath), true);
+        msg("Database loaded with " . count($database) . " entries.");
+        return $database;
+    }
+    return null;
 }
 
-$dbFile = !empty($config['db_file']) ? $config['db_file'] : 'db.json';
-$database = loadDatabase($dbFile) ?: loadDatabase('db.json');
-
-if ($database === null) {
-    msg("Database file not found: " . $dbFile);
-} else {
-    msg("Database loaded with " . count($database) . " entries.");
-    clean_database($database, $steam_ids);
+// Check if the database file is set in the config file
+if (!empty($config['db_file']) || file_exists('db.json')) {
+    $database = load_database($config['db_file']) ?? load_database('db.json');
+    if ($database === null) {
+        msg("Database file not found: " . (!empty($config['db_file']) ? $config['db_file'] : 'db.json'));
+    } else {
+        clean_database($database, $steam_ids);
+    }
 }
 
 // Function to save database to a file

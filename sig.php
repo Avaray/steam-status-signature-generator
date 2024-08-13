@@ -196,11 +196,6 @@ function save_database($database)
     msg("Database saved with " . count($database) . " entries.");
 }
 
-function round_up($number)
-{
-    return ceil($number * 10) / 10;
-}
-
 // Function to calculate minimal interval based on the number of Steam IDs
 function calculate_min_interval($steam_ids, $output_format = 'seconds', $info = false)
 {

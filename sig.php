@@ -226,7 +226,7 @@ function calculate_min_interval($steam_ids, $output_format = 'seconds', $info = 
 // Function to clean the database from old entries (remove entries that does not exist in the current list of Steam IDs)
 function clean_database($database, $steam_ids)
 {
-    $new_database = [];
+    $new_database = array();
     foreach ($database as $entry) {
         if (in_array($entry['steam_id'], $steam_ids)) {
             $new_database[] = $entry;

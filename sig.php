@@ -334,15 +334,11 @@ if ($config['capitalized_personaname']) {
     $personaname = $personaname;
 }
 
-$backgrounds = [
+$backgrounds = array(
     'offline' => 'img/bg_offline.png',
     'ingame' => 'img/bg_ingame.png',
     'online' => 'img/bg_online.png',
-];
-
-$avatars = [
-    'error' => 'img/avatar_error.png',
-];
+);
 
 // Define default fonts
 $font_primary = 'fonts/RobotoCondensed-BoldItalic.ttf';

@@ -252,6 +252,13 @@ function clean_database($database, $steam_ids)
     return $new_database;
 }
 
+// Function to get file hash.
+// Will be used to detect changes in users.json file
+function file_hash($file_path)
+{
+    return md5_file($file_path);
+}
+
 // Until now everything works fine for PHP 5.3 and above
 exit();
 

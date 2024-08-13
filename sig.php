@@ -7,7 +7,6 @@ function msg($message, $die = false)
     if ($die) {
         die();
     }
-
 }
 
 // Check if GD is installed

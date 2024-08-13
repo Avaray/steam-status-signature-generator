@@ -6,5 +6,7 @@
   "capitalize_name": true,
   "capitalize_status": false,
   "font_primary": "",
-  "font_secondary": ""
+  "font_secondary": "",
+  "input_file": "users.json",
+  "output_dir": "status"
 }

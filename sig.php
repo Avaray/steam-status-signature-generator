@@ -9,13 +9,13 @@ function msg($message, $die = false)
     }
 }
 
-// Check if GD is installed
+// Check if GD is installed (required for image generation)
 $gd_functions = get_extension_funcs("gd");
 if (!$gd_functions) {
     msg("GD not installed. Please install/enable GD extension.", true);
 }
 
-// Check if cURL is installed
+// Check if cURL is installed (required for Steam API requests)
 $curl_functions = get_extension_funcs("curl");
 if (!$curl_functions) {
     msg("cURL not installed. Please install/enable cURL extension.", true);

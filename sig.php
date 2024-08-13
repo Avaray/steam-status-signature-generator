@@ -8,7 +8,7 @@
 chdir(dirname(__FILE__));
 
 // Declare global variables
-$steam_ids = [];
+$steam_ids = array();
 $steam_api_key = '';
 $config = [];
 $database = array();

@@ -10,7 +10,7 @@ chdir(dirname(__FILE__));
 // Declare global variables
 $steam_ids = array();
 $steam_api_key = '';
-$config = [];
+$config = array();
 $database = array();
 
 // Custom echo function with timestamp

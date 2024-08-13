@@ -1,5 +1,7 @@
 # Configuration Flow Visualization
 
+<!-- https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams -->
+
 ```mermaid
 graph TD
     A[Check if config.json file exists] --> B[Read config.json file]

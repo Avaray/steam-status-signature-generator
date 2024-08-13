@@ -59,19 +59,19 @@ https://example.com/path-to-script/76561198037068779.png
 graph TD
     A[Check if config.json file exists] --> B[Read config.json file]
     B --> C{Is something missing?}
+    C -->|No| M[Generate images]
     C -->|Yes| D[Check environment variables]
     D --> E{Is something missing?}
+    E -->|No| M
     E -->|Yes| F[Check arguments passed to script]
     F --> G{Is something missing?}
+    G -->|No| M
     G -->|Yes| H[Check query parameters in URL]
     H --> I{Is something missing?}
-    I -->|Yes| K{Is something still missing?}
-    K -->|Yes| L[Exit with error message]
-    K -->|No| M[Generate images]
     I -->|No| M
-    G -->|No| M
-    E -->|No| M
-    C -->|No| M
+    I -->|Yes| K{Is something still missing?}
+    K -->|No| M
+    K -->|Yes| L[Exit with error message]
 ```
 
 ### Timezone

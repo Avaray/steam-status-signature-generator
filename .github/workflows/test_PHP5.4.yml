@@ -1,4 +1,4 @@
-name: 'PHP 5.4 '
+name: '5.4 '
 
 on: [push, pull_request]
 

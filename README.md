@@ -2,12 +2,13 @@
 
 <!-- Remember to change branches in badges after PR to main -->
 
+[![5.3](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP5.3.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP5.3.yml)
 [![5.4](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP5.4.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP5.4.yml)
 [![5.6](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP5.6.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP5.6.yml)
-[![7.1](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP7.1.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP7.1.yml)
+[![7.0](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP7.0.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP7.0.yml)
 [![7.4](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP7.4.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP7.4.yml)
 [![8.0](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.0.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.0.yml)
-[![8.3](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.3.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.3.yml)
+[![8.4](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.4.yml/badge.svg)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.4.yml)
 
 This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) image with status of [Steam](https://store.steampowered.com/) user.  
 The width of the image adjusts to the length of the username or the length of the game title the user is currently playing. The height of the image is fixed.  

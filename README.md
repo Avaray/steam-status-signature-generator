@@ -56,7 +56,7 @@ php sig.php key=ABCD ids=1234,5678
 
 > This method requires properly configured web server.
 
-```bash
+```
 https://wow.com/?key=ABCD&ids=1234,5678
 ```
 
@@ -65,7 +65,7 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | Key                 | Value type | Default | Required | Description                                                                                                |
 | ------------------- | ---------- | :-----: | :------: | ---------------------------------------------------------------------------------------------------------- |
 | `key`               | `string`   |  `""`   | **Yes**  | Your Steam [API Key](https://steamcommunity.com/dev/apikey)                                                |
-| `ids`               | `array`    | `[""]`  | **Yes**  | List of [Community ID's](https://developer.valvesoftware.com/wiki/SteamID)                                 |
+| `ids`               | `array`    | `[""]`  | **Yes**  | List of [Community ID's](https://developer.valvesoftware.com/wiki/SteamID) (SteamID64)                     |
 | `timezone`          | `string`   |  `""`   |   _No_   | Your [TimeZone](https://www.php.net/manual/en/timezones.europe.php) (set if your machine shows wrong time) |
 | `avatar`            | `boolean`  | `true`  |   _No_   | Include profile image                                                                                      |
 | `capitalize_name`   | `boolean`  | `false` |   _No_   | Name will be capitalized                                                                                   |

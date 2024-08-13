@@ -1,5 +1,9 @@
 <?php
 
+// --------------------------------------------------------------------------------------------
+// CONFIGURATION
+// --------------------------------------------------------------------------------------------
+
 // Custom echo function with timestamp
 function msg($message, $die = false)
 {
@@ -25,6 +29,7 @@ if (!$curl_functions) {
 // Declare global variables
 $steam_id = '';
 $steam_api_key = '';
+$config = [];
 
 // Check if Steam API Key is set in the environment variables
 if (getenv('STEAM_API_KEY')) {
@@ -67,13 +72,32 @@ if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key']) && empty($st
     $steam_api_key = $_GET['steam_api_key'];
 }
 
-define('repository_url', 'https://github.com/Avaray/personal-steam-signature');
+// Read config file if Steam ID or Steam API Key is not set
+if (empty($steam_id) || empty($steam_api_key)) {
+    class FileNotFoundException extends Exception
+    {}
 
-$config = require 'config.php';
+    try {
+        $configFile = 'config.php';
+
+        if (!file_exists($configFile)) {
+            throw new FileNotFoundException("The configuration file (config.php) does not exist.");
+        }
+
+        $config = require $configFile;
+
+        msg("Configuration file loaded.");
+
+    } catch (FileNotFoundException $e) {
+        msg($e->getMessage());
+    } catch (Throwable $e) {
+        msg($e->getMessage());
+    }
+}
 
 // Check if Steam ID is set in the config file
 if (!empty($config['steam_id']) && empty($steam_id)) {
-    msg("Steam ID found in the config file.");
+    msg("Steam ID {$config['steam_id']} found in the config file.");
     $steam_id = $config['steam_id'];
 }
 
@@ -97,13 +121,19 @@ exit();
 
 // --------------------------------------------------------------------------------------------
 // STEAM API - GETTING INFORMATION
+// https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerSummaries
 // --------------------------------------------------------------------------------------------
 
-// https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerSummaries
+// Set proper protocol based on the server configuration
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+
+// Set the base URL for the Steam API request
 $api_base_url = "{$protocol}://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/";
+
+// Set the full URL for the Steam API request
 $api_url = "{$api_base_url}?key={$config['steam_api_key']}&steamids={$config['steam_id']}";
 
+// Function to get player summaries from the Steam API
 function get_player_summaries($api_url)
 {
     $ch = curl_init();

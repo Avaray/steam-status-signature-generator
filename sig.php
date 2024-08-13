@@ -196,7 +196,10 @@ function load_database($filePath)
 
 // Check if the database file is set in the config file
 if (!empty($config['db_file']) || file_exists('db.json')) {
-    $database = load_database($config['db_file']) ?? load_database('db.json');
+    $database = load_database($config['db_file']);
+    if ($database === null) {
+        $database = load_database('db.json');
+    }
     if ($database === null) {
         msg("Database file not found: " . (!empty($config['db_file']) ? $config['db_file'] : 'db.json'));
     } else {

@@ -1,6 +1,5 @@
 .env
 *.sh
-config*
 .php*
 sig.png
 sig.txt

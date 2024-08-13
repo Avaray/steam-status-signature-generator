@@ -16,86 +16,72 @@ Where you place the generated image is entirely up to you. In the past, people u
 
 ## Requirements
 
-- [Steam API Key](https://steamcommunity.com/dev/apikey) (you can get it for free if your account is [not limited](https://help.steampowered.com/en/faqs/view/71D3-35C2-AD96-AA3A)).
-
 - [PHP](https://www.php.net/) 5.4 or higher. Check badges above for PHP versions.
-- [GD](https://github.com/libgd/libgd) extension (version 2.X). Depending on your server configuration, this will either be enabled or disabled. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information on how to enable it.
+- [GD](https://github.com/libgd/libgd) extension. Depending on your server configuration, this will either be enabled or disabled. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information on how to enable it.
 - [CURL](https://curl.se/) extension. Same case as with GD extension. If it's not enabled, enable it.
+
+Except that you need [Steam API Key](https://steamcommunity.com/dev/apikey). You can get it for free if your account [is not limited](https://help.steampowered.com/en/faqs/view/71D3-35C2-AD96-AA3A).
 
 ## Installation
 
-1. Clone this repository.
+You can [clone](https://git-scm.com/docs/git-clone/en) this repository using [Git](https://git-scm.com/) or [GitHub Desktop](https://github.com/apps/desktop) or any other [Git client](https://git-scm.com/downloads/guis).
 
 ```bash
 git clone https://github.com/Avaray/personal-steam-signature.git
 ```
 
-> soon...
+Or you can download this repository as a [ZIP archive](https://github.com/Avaray/personal-steam-signature/archive/refs/heads/master.zip) and extract it to your desired location.
 
 ## Usage
 
-There are two ways to configure this script:
-
-1. With `config.php` file.
-2. By passing variables as [arguments](https://www.php.net/manual/en/reserved.variables.argv.php). Config file will be ignored if you pass valid arguments.
-
-With [CRON](https://cronitor.io/guides)
-
-> soon...
-
-Remotely with [HTTP Get request](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET)
-
-> soon...
-
-Then you can access your signature with URL like this:
-
-```
-https://example.com/path-to-script/76561198037068779.png
-```
+Keep in mind that there is limit of `100,000` requests per day for Steam API.  
+If you are planning to use this script for a large number of users, you should calculae how many requests you will make per day. Maximum number of users in one request is `100`. So if you have `1000` users, you need to launch this script `10` times, splitting users into groups of `100`. That way you will make `10` requests to Steam API. So, you can perform entire operation every `≈ 8.6 second` to not exceed the limit.
 
 ## Configuration
 
-<details>
-  <summary>Details</summary>
-```mermaid
-graph TD
-    A[Check if config.json file exists] --> B[Read config.json file]
-    B --> C{Is something missing?}
-    C -->|No| M[Generate images]
-    C -->|Yes| D[Check environment variables]
-    D --> E{Is something missing?}
-    E -->|No| M
-    E -->|Yes| F[Check arguments passed to script]
-    F --> G{Is something missing?}
-    G -->|No| M
-    G -->|Yes| H[Check query parameters in URL]
-    H --> I{Is something still missing?}
-    I -->|No| M
-    I -->|Yes| L[Exit with error message]
+Basically all you need is to provide [Steam API Key](https://steamcommunity.com/dev) and at least one [Steam ID](https://developer.valvesoftware.com/wiki/SteamID) to get started.  
+You can do that in three ways.
+
+### By editing `config.json` file.
+
+```json
+{
+  "key": "ABCD",
+  "ids": ["1234", "5678"]
+}
 ```
 
-### Timezone
+### By passing variables as arguments.
 
-https://www.php.net/manual/en/timezones.europe.php
-
-You need `config.php` file only
-
-1. Set `steam_api_key`. You can get it [here](prestashop/github-action-php-lint).
-2. Set `steam_id`. You can get it from your Steam profile URL. It's 17 digits long number at the end of the URL. You can use also [this](https://steamid.info/) non-official website to get it.
-
-```php
-<?php
-return [
-    'steam_api_key' => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    'steam_id' => 'XXXXXXXXXXXXXXXXX',
-    'capitalized_personaname' => false,
-];
+```bash
+php sig.php key=ABCD ids=1234,5678
 ```
+
+### By passing variables as URL parameters.
+
+> This method requires properly configured web server.
+
+```bash
+https://wow.com/?key=ABCD&ids=1234,5678
+```
+
+## List of options for `config.json` file
+
+| Key                 | Value type | Default | Required | Description                                                                                                |
+| ------------------- | ---------- | :-----: | :------: | ---------------------------------------------------------------------------------------------------------- |
+| `key`               | `string`   |  `""`   | **Yes**  | Your Steam [API Key](https://steamcommunity.com/dev/apikey)                                                |
+| `ids`               | `array`    | `[""]`  | **Yes**  | List of [Community ID's](https://developer.valvesoftware.com/wiki/SteamID)                                 |
+| `timezone`          | `string`   |  `""`   |   _No_   | Your [TimeZone](https://www.php.net/manual/en/timezones.europe.php) (set if your machine shows wrong time) |
+| `avatar`            | `boolean`  | `true`  |   _No_   | Include profile image                                                                                      |
+| `capitalize_name`   | `boolean`  | `false` |   _No_   | Name will be capitalized                                                                                   |
+| `capitalize_status` | `boolean`  | `false` |   _No_   | Status will be capitalized                                                                                 |
+| `font_primary`      | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
+| `font_secondary`    | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
+
+You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 
 ## # TODO's
 
 - [ ] Re-write the entire script.
-- [ ] Auto-creating of `config.php` file if it doesn't exist.
-- [ ] Possibility to pass data in URL (use [parse_ur](https://www.php.net/manual/en/function.parse-url.phpl) for that) or as [parameters](https://www.php.net/manual/en/reserved.variables.argv.php).
-- [ ] Support for multiple users (up to 100).
-- [ ] Workflow for genrating example images.
+- [ ] Support for multiple users (up to 100 ...and maybe more).
+- [ ] Workflow for generating example images.

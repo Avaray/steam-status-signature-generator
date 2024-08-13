@@ -32,11 +32,6 @@ git clone https://github.com/Avaray/personal-steam-signature.git
 
 Or you can download this repository as a [ZIP archive](https://github.com/Avaray/personal-steam-signature/archive/refs/heads/master.zip) and extract it to your desired location.
 
-## Usage
-
-Keep in mind that there is limit of `100,000` requests per day for Steam API.  
-If you are planning to use this script for a large number of users, you should calculae how many requests you will make per day. Maximum number of users in one request is `100`. So if you have `1000` users, you need to launch this script `10` times, splitting users into groups of `100`. That way you will make `10` requests to Steam API. So, you can perform entire operation every `≈ 8.6 second` to not exceed the limit.
-
 ## Configuration
 
 Basically all you need is to provide [Steam API Key](https://steamcommunity.com/dev) and at least one [Steam ID](https://developer.valvesoftware.com/wiki/SteamID) to get started.  
@@ -80,8 +75,13 @@ https://wow.com/?key=ABCD&ids=1234,5678
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 
-## # TODO's
+## Notes
+
+Keep in mind that there is limit of `100,000` requests per day for Steam API. If you are planning to use this script for a large number of users, you should calculae how often you can run this script. Maximum number of users to check in one request is `100`. So if you have `1000` users, you will need to make `10` requests in one run. So, in this example you can perform entire operation every `≈ 8.6 seconds` to not exceed the limit.
+
+## TODO's
 
 - [ ] Re-write the entire script.
-- [ ] Support for multiple users (up to 100 ...and maybe more).
+- [ ] Support for multiple users (up to 100 ...and maybe more). Loading list from file.
+- [ ] Automatic delay if previous request was made less than X seconds ago.
 - [ ] Workflow for generating example images.

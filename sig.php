@@ -195,6 +195,49 @@ function save_database($database)
     msg("Database saved with " . count($database) . " entries.");
 }
 
+function round_up($number)
+{
+    return ceil($number * 10) / 10;
+}
+
+// Function to calculate minimal interval based on the number of Steam IDs
+function calculate_min_interval($steam_ids, $output_format = 'seconds', $info = false)
+{
+    $max_requests_per_day = 100000;
+    $max_entries_per_request = 100;
+    $max_requests_per_process = ceil(count($steam_ids) / $max_entries_per_request);
+    $seconds_per_day = 86400;
+    $min_interval = $seconds_per_day / $max_requests_per_day * $max_requests_per_process;
+    $rounded = ceil($min_interval * 10) / 10;
+    if ($output_format === 'ms') {
+        $rounded = $rounded * 1000;
+    } elseif ($output_format === 'minutes') {
+        $rounded = $rounded / 60;
+    } elseif ($output_format === 'hours') {
+        $rounded = $rounded / 3600;
+    }
+    if ($info) {
+        msg("Recommended minimum request interval: {$rounded} {$output_format}");
+    }
+    return $rounded;
+}
+
+// Function to clean the database from old entries (remove entries that does not exist in the current list of Steam IDs)
+function clean_database($database, $steam_ids)
+{
+    $new_database = [];
+    foreach ($database as $entry) {
+        if (in_array($entry['steam_id'], $steam_ids)) {
+            $new_database[] = $entry;
+        }
+        $old_entries_removed = count($database) - count($new_database);
+        if ($old_entries_removed > 0) {
+            msg("Removed {$old_entries_removed} old entries from the database.");
+        }
+    }
+    return $new_database;
+}
+
 // Until now everything should be working fine. Commiting.
 exit();
 

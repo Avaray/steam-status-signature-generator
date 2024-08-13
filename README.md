@@ -48,6 +48,8 @@ You can do that in three ways.
 
 ### By passing variables as arguments.
 
+> In this case you need to split `ids` with comma `,`.
+
 ```bash
 php sig.php key=ABCD ids=1234,5678
 ```
@@ -73,6 +75,8 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | `capitalize_status` | `boolean`  | `false` |   _No_   | Status will be capitalized                                                                                 |
 | `font_primary`      | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
 | `font_secondary`    | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
+| `input_file`        | `string`   |  `""`   |   _No_   | Path to the file with list of ID's. Supported formats: `.txt`, `.json`                                     |
+| `output_dir`        | `string`   |  `""`   |   _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory.  |
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 
@@ -80,9 +84,20 @@ You can check configuration flow [here](FLOW.md) to see how the script searches 
 
 Keep in mind that there is limit of `100,000` requests per day for Steam API. If you are planning to use this script for a large number of users, you should calculae how often you can run this script. Maximum number of users to check in one request is `100`. So if you have `1000` users, you will need to make `10` requests in one run. So, in this example you can perform entire operation every `≈ 8.6 seconds` to not exceed the limit.
 
+Dealing with many users can be heavy for your server. If you are planning to use this script as part of a public service, you should consider using good hosting provider. Free service providers may ban your account if you exceed their limits.
+
+When you run the script for the first time, it will generate statuses for all ID's. This can take a lot of time and machine resources. On next runs, it will only generate them for people whose statuses have changed.
+
+### Loading ID's from file
+
+If you want to load ID's from [JSON](https://www.w3schools.com/js/js_json_arrays.asp) file, that file should contain one valid array of ID's.  
+In text file, each ID can be split by new line, space, comma or semicolon. JSON file should contain array of ID's.
+
 ## TODO's
 
 - [ ] Re-write the entire script.
 - [ ] Support for multiple users (up to 100 ...and maybe more). Loading list from file.
 - [ ] Automatic delay if previous request was made less than X seconds ago.
 - [ ] Workflow for generating example images.
+- [ ] Cleanups for ID's that are not used anymore.
+- [ ] Customizations for individual ID's.

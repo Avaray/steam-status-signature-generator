@@ -183,10 +183,19 @@ if (empty($steam_api_key)) {
     msg("Steam API Key not found. Please set Steam API Key in the config file or pass it as an argument.", true);
 }
 
-// Check if database file exists and load it
-if (file_exists('db.json')) {
-    $database = json_decode(file_get_contents('db.json'), true);
+function loadDatabase($filePath)
+{
+    return file_exists($filePath) ? json_decode(file_get_contents($filePath), true) : null;
+}
+
+$dbFile = !empty($config['db_file']) ? $config['db_file'] : 'db.json';
+$database = loadDatabase($dbFile) ?: loadDatabase('db.json');
+
+if ($database === null) {
+    msg("Database file not found: " . $dbFile);
+} else {
     msg("Database loaded with " . count($database) . " entries.");
+    clean_database($database, $steam_ids);
 }
 
 // Function to save database to a file

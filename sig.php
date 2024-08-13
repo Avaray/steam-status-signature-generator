@@ -1,32 +1,53 @@
 <?php
 
+function msg($message, $die = false)
+{
+    $dateTime = date('Ymd.His'); // YYYYMMDD.HHMMSS
+    echo "{$dateTime} | {$message}\n";
+    if ($die) {
+        die();
+    }
+
+}
+
 // Check if GD is installed
 $gd_functions = get_extension_funcs("gd");
 if (!$gd_functions) {
-    die("GD not installed. Please install/enable GD extension.");
+    msg("GD not installed. Please install/enable GD extension.", true);
 }
 
 // Check if cURL is installed
 $curl_functions = get_extension_funcs("curl");
 if (!$curl_functions) {
-    die("cURL not installed. Please install/enable cURL extension.");
+    msg("cURL not installed. Please install/enable cURL extension.", true);
 }
 
+// Declare global variables
 $steam_id = '';
 $steam_api_key = '';
 
-// Check if arguments are passed to the script
+// Check if Steam API Key is set in the environment variables
+if (getenv('STEAM_API_KEY')) {
+    msg("Steam API Key found in environment variables.");
+    $steam_api_key = getenv('STEAM_ID');
+}
+
+// Read arguments passed in the command line
 if (!empty($argv)) {
-    $args = explode(',', $argv[0]);
+    $args = explode(',', $argv[1]);
     foreach ($args as $arg) {
         $arg = explode('=', $arg);
         if (count($arg) === 2 && !empty($arg[1])) {
             if ($arg[0] === 'steam_id') {
-                echo "Steam ID found in arguments.\n";
+                msg("Steam ID {$arg[1]} found in arguments.");
                 $steam_id = $arg[1];
             } elseif ($arg[0] === 'steam_api_key') {
-                echo "Steam API Key found in arguments\n";
-                $steam_api_key = $arg[1];
+                if (empty($steam_api_key)) {
+                    msg("Steam API Key found in arguments");
+                    $steam_api_key = $arg[1];
+                }
+            } else {
+                msg("Found unknown argument: {$arg[0]}");
             }
         }
     }
@@ -36,26 +57,22 @@ if (!empty($argv)) {
 // Server should be configured to allow URL query parameters
 // Otherwise array $_GET will be empty
 if (isset($_GET['steam_id']) && !empty($_GET['steam_id'])) {
-    echo "Steam ID found in the URL.\n";
-    $steam_id = $_GET['steam_id'];
+    if (empty($steam_api_key)) {
+        msg("Steam ID found in the URL.");
+        $steam_id = $_GET['steam_id'];
+    }
 }
 
 if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key'])) {
-    echo "Steam API Key found in the URL.\n";
+    msg("Steam API Key found in the URL.");
     $steam_api_key = $_GET['steam_api_key'];
 }
-
-echo "Steam ID: {$steam_id}\n";
-echo "Steam API Key: {$steam_api_key}\n";
-
-// here I am currently, will continue later
-// im adding some code to find variables in various places
-
-exit();
 
 define('repository_url', 'https://github.com/Avaray/personal-steam-signature');
 
 $config = require 'config.php';
+
+msg(getenv('STEAM_API_KEY'));
 
 // Check if required fields are set
 if (empty($config['steam_id'])) {
@@ -65,6 +82,8 @@ if (empty($config['steam_id'])) {
 if (empty($config['steam_api_key'])) {
     die('ERROR: Steam API key not specified in config.php');
 }
+
+exit();
 
 // --------------------------------------------------------------------------------------------
 // STEAM API - GETTING INFORMATION
@@ -198,7 +217,7 @@ if ($status_prev === $status_now) {
     file_put_contents($status_file_path, $status_now);
 }
 
-echo 'Until now everything should be working fine.';
+msg('Until now everything should be working fine.');
 
 # Rest of work for tomorrow
 

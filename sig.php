@@ -4,14 +4,61 @@
 // CONFIGURATION
 // --------------------------------------------------------------------------------------------
 
+// Declare global variables
+$steam_id = '';
+$steam_api_key = '';
+$config = [];
+
 // Custom echo function with timestamp
 function msg($message, $die = false)
 {
     $dateTime = date('Ymd.His'); // YYYYMMDD.HHMMSS
-    echo "{$dateTime} | {$message}\n";
+    echo "\e[34m{$dateTime}\e[0m - {$message}\n";
     if ($die) {
         die();
     }
+}
+
+// Read config file if it exists
+class FileNotFoundException extends Exception
+{}
+
+try {
+    $configFile = 'config.php';
+
+    if (!file_exists($configFile)) {
+        throw new FileNotFoundException("The configuration file (config.php) does not exist.");
+    }
+
+    $config = require $configFile;
+
+    // Set default timezone if specified
+    // It's here because it should be set before any msg function call
+    if (isset($config['timezone'])) {
+        date_default_timezone_set($config['timezone']);
+    }
+
+    msg("Starting.");
+
+    $php_version = phpversion();
+    msg("Using PHP version \e[35m{$php_version}\e[0m");
+
+} catch (FileNotFoundException $e) {
+    msg($e->getMessage());
+} catch (Throwable $e) {
+    msg($e->getMessage());
+}
+
+// Check if Steam ID is set in the config file
+if (!empty($config['steam_id']) && empty($steam_id)) {
+    msg("Steam ID {$config['steam_id']} found in the config file.");
+    $steam_id = $config['steam_id'];
+}
+
+// Check if Steam API Key is set in the config file
+if (!empty($config['steam_api_key']) && empty($steam_api_key)) {
+    msg("Steam API Key found in the config file.");
+    $steam_api_key = $config['steam_api_key'];
 }
 
 // Check if GD is installed (required for image generation)
@@ -25,11 +72,6 @@ $curl_functions = get_extension_funcs("curl");
 if (!$curl_functions) {
     msg("cURL not installed. Please install/enable cURL extension.", true);
 }
-
-// Declare global variables
-$steam_id = '';
-$steam_api_key = '';
-$config = [];
 
 // Check if Steam API Key is set in the environment variables
 if (getenv('STEAM_API_KEY')) {
@@ -72,41 +114,6 @@ if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key']) && empty($st
     $steam_api_key = $_GET['steam_api_key'];
 }
 
-// Read config file if Steam ID or Steam API Key is not set
-if (empty($steam_id) || empty($steam_api_key)) {
-    class FileNotFoundException extends Exception
-    {}
-
-    try {
-        $configFile = 'config.php';
-
-        if (!file_exists($configFile)) {
-            throw new FileNotFoundException("The configuration file (config.php) does not exist.");
-        }
-
-        $config = require $configFile;
-
-        msg("Configuration file loaded.");
-
-    } catch (FileNotFoundException $e) {
-        msg($e->getMessage());
-    } catch (Throwable $e) {
-        msg($e->getMessage());
-    }
-}
-
-// Check if Steam ID is set in the config file
-if (!empty($config['steam_id']) && empty($steam_id)) {
-    msg("Steam ID {$config['steam_id']} found in the config file.");
-    $steam_id = $config['steam_id'];
-}
-
-// Check if Steam API Key is set in the config file
-if (!empty($config['steam_api_key']) && empty($steam_api_key)) {
-    msg("Steam API Key found in the config file.");
-    $steam_api_key = $config['steam_api_key'];
-}
-
 // Last check for Steam ID
 if (empty($steam_id)) {
     msg("Steam ID not found. Please set Steam ID in the config file or pass it as an argument.", true);
@@ -116,8 +123,6 @@ if (empty($steam_id)) {
 if (empty($steam_api_key)) {
     msg("Steam API Key not found. Please set Steam API Key in the config file or pass it as an argument.", true);
 }
-
-exit();
 
 // --------------------------------------------------------------------------------------------
 // STEAM API - GETTING INFORMATION
@@ -144,7 +149,7 @@ function get_player_summaries($api_url)
     $response = curl_exec($ch);
     $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($response_code === 0) {
-        die("ERROR: cURL request failed. Check internet connection and SSL.");
+        msg("ERROR: cURL request failed. Check internet connection and SSL.", true);
     }
 
     curl_close($ch);
@@ -156,22 +161,28 @@ function get_player_summaries($api_url)
     return $json;
 }
 
+// Get player summaries from the Steam API
 $summary = get_player_summaries($api_url);
 
+// Check if the response returned object
 if (!isset($summary['response']['players'][0])) {
     $status_url = 'https://steamstat.us/';
-    die("ERROR: Could not retrieve info. Check your API key or visit {$status_url} to check Steam services status.");
+    msg("ERROR: Could not retrieve info. Check your API key or visit {$status_url} to check Steam services status.", true);
 }
 
+// Check if the response is empty
 if (empty($summary['response']['players'])) {
-    die('ERROR: Invalid Steam Community ID. Must be valid SteamID64.');
+    msg('ERROR: Invalid Steam Community ID. Must be valid SteamID64.', true);
 }
 
+// Shorter alternative to previous checks
+// I need to think which approach I want to use
 $summary = isset($summary['response']['players'][0]) ? $summary['response']['players'][0] : null;
 if (!$summary) {
-    die('ERROR: Could not retrieve info');
+    msg('ERROR: Could not retrieve info from Steam API.', true);
 }
 
+// Set default empty values for the variables in case they are not in the response
 $personaname = isset($summary['personaname']) ? $summary['personaname'] : '';
 $avatar = isset($summary['avatarmedium']) ? $summary['avatarmedium'] : '';
 $personastate = isset($summary['personastate']) ? $summary['personastate'] : '';
@@ -182,6 +193,7 @@ $gameid = isset($summary['gameid']) ? $summary['gameid'] : '';
 // IMAGE GENERATION SETTINGS
 // --------------------------------------------------------------------------------------------
 
+// Set the current directory to the script directory
 chdir(dirname(__FILE__));
 
 function get_text_width($text, $font, $size)
@@ -198,18 +210,37 @@ $backgrounds = [
     'offline' => 'img/bg_offline.png',
     'ingame' => 'img/bg_ingame.png',
     'online' => 'img/bg_online.png',
-    'error' => 'img/bg_error.png',
 ];
 
 $avatars = [
     'error' => 'img/avatar_error.png',
 ];
 
-$fonts = [
-    'regular' => 'font/RobotoCondensed-Regular.ttf',
-    'italic' => 'font/RobotoCondensed-Italic.ttf',
-    'bold_italic' => 'font/RobotoCondensed-BoldItalic.ttf',
-];
+// Define default fonts
+$font_primary = 'fonts/RobotoCondensed-BoldItalic.ttf';
+$font_secondary = 'fonts/RobotoCondensed-Regular.ttf';
+
+// Check if the primary font is specified in the config file and if it exists in the fonts directory
+if (isset($config['font_primary'])) {
+    $primary = "fonts/{$config['font_primary']}";
+    if (!file_exists($primary)) {
+        msg("Specified primary font not found: {$primary}");
+    } else {
+        $font_primary = $primary;
+    }
+}
+
+// Check if the secondary font is specified in the config file and if it exists in the fonts directory
+if (isset($config['font_secondary'])) {
+    $secondary = "fonts/{$config['font_secondary']}";
+    if (!file_exists($secondary)) {
+        msg("Specified secondary font not found: {$secondary}");
+    } else {
+        $font_secondary = $secondary;
+    }
+}
+
+exit();
 
 $avatar_size = 64;
 $font_name = $fonts['bold_italic'];

@@ -8,5 +8,6 @@
   "font_primary": "",
   "font_secondary": "",
   "input_file": "users.json",
+  "db_file": "db.json",
   "output_dir": "status"
 }

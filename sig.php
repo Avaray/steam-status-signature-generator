@@ -32,16 +32,14 @@ try {
 
     $config = require $configFile;
 
-    // Set default timezone if specified
-    // It's here because it should be set before any msg function call
+    // Set timezone if specified
+    // It should be set before any msg function call
     if (isset($config['timezone'])) {
         date_default_timezone_set($config['timezone']);
     }
 
-    msg("Starting.");
-
     $php_version = phpversion();
-    msg("Using PHP version \e[35m{$php_version}\e[0m");
+    msg("Starting script with \e[35mPHP {$php_version}\e[0m");
 
 } catch (FileNotFoundException $e) {
     msg($e->getMessage());
@@ -74,7 +72,7 @@ if (!$curl_functions) {
 }
 
 // Check if Steam API Key is set in the environment variables
-if (getenv('STEAM_API_KEY')) {
+if (empty($steam_api_key) && !empty(getenv('STEAM_API_KEY'))) {
     msg("Steam API Key found in environment variables.");
     $steam_api_key = getenv('STEAM_API_KEY');
 }
@@ -136,7 +134,7 @@ $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : '
 $api_base_url = "{$protocol}://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/";
 
 // Set the full URL for the Steam API request
-$api_url = "{$api_base_url}?key={$config['steam_api_key']}&steamids={$config['steam_id']}";
+$api_url = "{$api_base_url}?key={$steam_api_key}&steamids={$config['steam_id']}";
 
 // Function to get player summaries from the Steam API
 function get_player_summaries($api_url)

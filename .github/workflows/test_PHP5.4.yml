@@ -1,13 +1,20 @@
-name: '5.4 '
+name: 'PHP 5.4 '
 
 on: [push, pull_request]
 
 jobs:
-  lint:
+  setup:
+    name: Setup PHP
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: PHP 5.4 syntax check
-        uses: PrestaShopCorp/github-action-php-lint/5.4@master
+      - name: Setup PHP
+        uses: shivammathur/setup-php@main
+        with:
+          php-version: '5.4'
+          extensions: gd, curl
+
+      - name: Lint main file
+        run: php -l sig.php

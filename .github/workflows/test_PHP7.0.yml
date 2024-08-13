@@ -1,4 +1,4 @@
-name: 'PHP 5.6 '
+name: 'PHP 7.0 '
 
 on: [push, pull_request]
 
@@ -13,7 +13,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@main
         with:
-          php-version: '5.6'
+          php-version: '7.0'
           extensions: gd, curl
 
       - name: Lint main file

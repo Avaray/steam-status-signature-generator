@@ -239,7 +239,7 @@ function clean_database($database, $steam_ids)
     return $new_database;
 }
 
-// Until now everything should be working fine. Commiting.
+// Until now everything works fine for PHP 5.3 and above
 exit();
 
 // --------------------------------------------------------------------------------------------

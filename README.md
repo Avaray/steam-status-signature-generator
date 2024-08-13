@@ -92,7 +92,7 @@ When you run the script for the first time, it will generate statuses for all ID
 ### Loading ID's from file
 
 If you want to load ID's from [JSON](https://www.w3schools.com/js/js_json_arrays.asp) file, that file should contain one valid array of ID's.  
-In text file, each ID can be split by new line, space, comma or semicolon. JSON file should contain array of ID's.
+In text file you can separate ID's by anything you want (new line, space, symbol, letter).
 
 ## TODO's
 

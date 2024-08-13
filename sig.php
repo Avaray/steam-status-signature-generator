@@ -364,8 +364,6 @@ if (isset($config['font_secondary'])) {
     }
 }
 
-exit();
-
 $avatar_size = 64;
 $font_name = $fonts['bold_italic'];
 $font_size_personaname = 24;
@@ -382,11 +380,11 @@ $image_height = $padding * 3 + $font_size_personaname + $font_size_default;
 
 $img = imagecreatetruecolor($image_width, $image_height);
 
-$text_colors = [
+$text_colors = array(
     'offline' => imagecolorallocate($img, 190, 190, 190),
     'ingame' => imagecolorallocate($img, 238, 238, 238),
     'online' => imagecolorallocate($img, 238, 238, 238),
-];
+);
 
 $avatar_start = $padding + $avatar_size;
 $personaname_start = $padding * 2 + $avatar_size + $font_size_personaname;

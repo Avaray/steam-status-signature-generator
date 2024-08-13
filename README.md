@@ -55,6 +55,8 @@ https://example.com/path-to-script/76561198037068779.png
 
 ## Configuration
 
+<details>
+  <summary>Details</summary>
 ```mermaid
 graph TD
     A[Check if config.json file exists] --> B[Read config.json file]
@@ -67,11 +69,9 @@ graph TD
     F --> G{Is something missing?}
     G -->|No| M
     G -->|Yes| H[Check query parameters in URL]
-    H --> I{Is something missing?}
+    H --> I{Is something still missing?}
     I -->|No| M
-    I -->|Yes| K{Is something still missing?}
-    K -->|No| M
-    K -->|Yes| L[Exit with error message]
+    I -->|Yes| L[Exit with error message]
 ```
 
 ### Timezone

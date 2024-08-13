@@ -54,7 +54,8 @@ php sig.php key=ABCD ids=1234,5678
 
 ### By passing variables as URL parameters.
 
-> This method requires properly configured web server.
+> This method requires properly configured web server.  
+> If you will keep this script in public directory, make sure you are not exposing your `config.json` file.
 
 ```
 https://wow.com/?key=ABCD&ids=1234,5678

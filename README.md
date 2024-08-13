@@ -57,18 +57,18 @@ https://example.com/path-to-script/76561198037068779.png
 
 ```mermaid
 graph TD
-    A[Check if config file exists] --> B[Gather data from config file]
-    B --> C{Is data missing?}
+    A[Check if config.json file exists] --> B[Read config.json file]
+    B --> C{Is something missing?}
     C -->|Yes| D[Check environment variables]
-    D --> E{Is data still missing?}
+    D --> E{Is something missing?}
     E -->|Yes| F[Check arguments passed to script]
-    F --> G{Is data still missing?}
-    G -->|Yes| H[Check if something was passed in IRL]
-    H --> I{Is data still missing?}
+    F --> G{Is something missing?}
+    G -->|Yes| H[Check query parameters in URL]
+    H --> I{Is something missing?}
     I -->|Yes| J[Check if any required variable is missing]
-    J --> K{Are any required variables missing?}
-    K -->|Yes| L[Exit app]
-    K -->|No| M[Continue with application]
+    J --> K{Is something still missing?}
+    K -->|Yes| L[Exit with error message]
+    K -->|No| M[Generate images]
     I -->|No| M
     G -->|No| M
     E -->|No| M

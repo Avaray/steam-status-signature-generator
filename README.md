@@ -76,13 +76,14 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | `font_primary`      | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
 | `font_secondary`    | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
 | `input_file`        | `string`   |  `""`   |   _No_   | Path to the file with list of ID's. Supported formats: `.txt`, `.json`                                     |
+| `db_file`           | `string`   |  `""`   |   _No_   | Path to the JSON file where statuses will be saved.                                                        |
 | `output_dir`        | `string`   |  `""`   |   _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory.  |
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 
 ## Notes
 
-Keep in mind that there is limit of `100,000` requests per day for Steam API. If you are planning to use this script for a large number of users, you should calculae how often you can run this script. Maximum number of users to check in one request is `100`. So if you have `1000` users, you will need to make `10` requests in one run. So, in this example you can perform entire operation every `≈ 8.6 seconds` to not exceed the limit.
+Keep in mind that there is limit of `100,000` requests per day for Steam API. If you are planning to use this script for a large number of users, you should calculae how often you can run this script. Maximum number of users to check in one request is `100`. So if you have `1000` users, you will need to make `10` requests in one run. So, in this example you can perform entire operation every `≈ 8.64 seconds` to not exceed the limit.
 
 Dealing with many users can be heavy for your server. If you are planning to use this script as part of a public service, you should consider using good hosting provider. Free service providers may ban your account if you exceed their limits.
 

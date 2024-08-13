@@ -4,10 +4,14 @@
 // CONFIGURATION
 // --------------------------------------------------------------------------------------------
 
+// Set the current directory to the script directory
+chdir(dirname(__FILE__));
+
 // Declare global variables
-$steam_id = '';
+$steam_ids = [];
 $steam_api_key = '';
 $config = [];
+$database = array();
 
 // Custom echo function with timestamp
 function msg($message, $die = false)
@@ -24,13 +28,13 @@ class FileNotFoundException extends Exception
 {}
 
 try {
-    $configFile = 'config.php';
+    $configFile = 'config.json';
 
     if (!file_exists($configFile)) {
-        throw new FileNotFoundException("The configuration file (config.php) does not exist.");
+        throw new FileNotFoundException("The configuration file (config.json) does not exist.");
     }
 
-    $config = require $configFile;
+    $config = json_decode(file_get_contents('config.json'), true);
 
     // Set timezone if specified
     // It should be set before any msg function call
@@ -47,16 +51,53 @@ try {
     msg($e->getMessage());
 }
 
-// Check if Steam ID is set in the config file
-if (!empty($config['steam_id']) && empty($steam_id)) {
-    msg("Steam ID {$config['steam_id']} found in the config file.");
-    $steam_id = $config['steam_id'];
+// Check if Steam API Key is set in the config file
+if (!empty($config['key']) && empty($steam_api_key)) {
+    msg("Steam API Key found in the config file.");
+    $steam_api_key = $config['key'];
 }
 
-// Check if Steam API Key is set in the config file
-if (!empty($config['steam_api_key']) && empty($steam_api_key)) {
-    msg("Steam API Key found in the config file.");
-    $steam_api_key = $config['steam_api_key'];
+// Check if input_file is set in the config file
+if (!empty($config['input_file'])) {
+    $file_path = $config['input_file'];
+    if (file_exists($file_path)) {
+        $file_extension = pathinfo($file_path, PATHINFO_EXTENSION);
+        if ($file_extension === 'json') {
+            $json = json_decode(file_get_contents($file_path), true);
+            if (isset($json['ids'])) {
+                $steam_ids = $json['ids'];
+            }
+        } elseif ($file_extension === 'txt') {
+            $content = file_get_contents($file_path);
+            $extracted = preg_split('/[^\d]+/', $content);
+            $steam_ids = array_filter($extracted);
+        } else {
+            msg("Unsupported file extension .{$file_extension} for the input file.");
+        }
+        $amount = count($steam_ids);
+        if ($amount === 0) {
+            msg("No Steam IDs found in the input file.");
+        } elseif ($amount === 1) {
+            msg("Steam ID {$steam_ids[0]} found in the input file.");
+        } else {
+            msg("Found {$amount} Steam IDs in the input file.");
+        }
+    } else {
+        msg("Input file not found: {$file_path}");
+    }
+}
+
+// Check if at least one Steam ID is set in the config file
+if (empty($steam_ids) && count($config['ids']) > 0) {
+    // Commented way of merging arrays is 5.4 compatible
+    // $steam_ids = array_merge($steam_ids, $config['steam_ids']);
+    $steam_ids = $config['ids']; // This should be enough for PHP 5.4
+    $amount = count($steam_ids);
+    if ($amount === 1) {
+        msg("Steam ID {$steam_ids[0]} found in the config file.");
+    } else {
+        msg("Found {$amount} Steam IDs in the config file.");
+    }
 }
 
 // Check if GD is installed (required for image generation)
@@ -78,14 +119,20 @@ if (empty($steam_api_key) && !empty(getenv('STEAM_API_KEY'))) {
 }
 
 // Read arguments passed in the command line
-if (!empty($argv)) {
+if (!empty($argv) && empty($steam_ids)) {
     for ($i = 1; $i < count($argv); $i++) {
         $arg = explode('=', $argv[$i]);
         if (count($arg) === 2 && !empty($arg[1])) {
-            if ($arg[0] === 'steam_id') {
-                msg("Steam ID {$arg[1]} found in arguments.");
-                $steam_id = $arg[1];
-            } elseif ($arg[0] === 'steam_api_key' && empty($steam_api_key)) {
+            if ($arg[0] === 'ids') {
+                $ids = explode(',', $arg[1]);
+                $amount = count($ids);
+                if ($amount === 1) {
+                    msg("Steam ID {$ids[0]} found in arguments.");
+                } else {
+                    msg("Found {$amount} Steam IDs in arguments.");
+                }
+                $steam_ids = $ids;
+            } elseif ($arg[0] === 'key' && empty($steam_api_key)) {
                 msg("Steam API Key found in arguments.");
                 $steam_api_key = $arg[1];
             } else {
@@ -95,15 +142,28 @@ if (!empty($argv)) {
     }
 }
 
-// Check if arguments are passed in the URL
+// Check if things passed in the URL
 // Server should be configured to allow URL query parameters
 // Otherwise array $_GET will be empty
 // This shouldn't throw any errors even if the server is not configured
-
-// Check if Steam ID is set in the URL
-if (isset($_GET['steam_id']) && !empty($_GET['steam_id']) && empty($steam_id)) {
-    msg("Steam ID found in the URL.");
-    $steam_id = $_GET['steam_id'];
+if (!empty($_GET)) {
+    foreach ($_GET as $key => $value) {
+        if ($key === 'ids') {
+            $ids = explode(',', $value);
+            $amount = count($ids);
+            if ($amount === 1) {
+                msg("Steam ID {$ids[0]} found in the URL.");
+            } else {
+                msg("Found {$amount} Steam IDs in the URL.");
+            }
+            $steam_ids = $ids;
+        } elseif ($key === 'key' && empty($steam_api_key)) {
+            msg("Steam API Key found in the URL.");
+            $steam_api_key = $value;
+        } else {
+            msg("Found unknown argument: {$key}");
+        }
+    }
 }
 
 // Check if Steam API Key is set in the URL
@@ -113,7 +173,7 @@ if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key']) && empty($st
 }
 
 // Last check for Steam ID
-if (empty($steam_id)) {
+if (empty($steam_ids)) {
     msg("Steam ID not found. Please set Steam ID in the config file or pass it as an argument.", true);
 }
 
@@ -121,6 +181,22 @@ if (empty($steam_id)) {
 if (empty($steam_api_key)) {
     msg("Steam API Key not found. Please set Steam API Key in the config file or pass it as an argument.", true);
 }
+
+// Check if database file exists and load it
+if (file_exists('db.json')) {
+    $database = json_decode(file_get_contents('db.json'), true);
+    msg("Database loaded with " . count($database) . " entries.");
+}
+
+// Function to save database to a file
+function save_database($database)
+{
+    file_put_contents('db.json', json_encode($database, JSON_PRETTY_PRINT));
+    msg("Database saved with " . count($database) . " entries.");
+}
+
+// Until now everything should be working fine. Commiting.
+exit();
 
 // --------------------------------------------------------------------------------------------
 // STEAM API - GETTING INFORMATION
@@ -190,9 +266,6 @@ $gameid = isset($summary['gameid']) ? $summary['gameid'] : '';
 // --------------------------------------------------------------------------------------------
 // IMAGE GENERATION SETTINGS
 // --------------------------------------------------------------------------------------------
-
-// Set the current directory to the script directory
-chdir(dirname(__FILE__));
 
 function get_text_width($text, $font, $size)
 {

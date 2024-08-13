@@ -1,5 +1,6 @@
 <?php
 
+// Custom echo function with timestamp
 function msg($message, $die = false)
 {
     $dateTime = date('Ymd.His'); // YYYYMMDD.HHMMSS
@@ -52,11 +53,15 @@ if (!empty($argv)) {
 // Check if arguments are passed in the URL
 // Server should be configured to allow URL query parameters
 // Otherwise array $_GET will be empty
+// This shouldn't throw any errors even if the server is not configured
+
+// Check if Steam ID is set in the URL
 if (isset($_GET['steam_id']) && !empty($_GET['steam_id']) && empty($steam_id)) {
     msg("Steam ID found in the URL.");
     $steam_id = $_GET['steam_id'];
 }
 
+// Check if Steam API Key is set in the URL
 if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key']) && empty($steam_api_key)) {
     msg("Steam API Key found in the URL.");
     $steam_api_key = $_GET['steam_api_key'];
@@ -89,6 +94,7 @@ if (empty($steam_api_key)) {
 }
 
 exit();
+
 // --------------------------------------------------------------------------------------------
 // STEAM API - GETTING INFORMATION
 // --------------------------------------------------------------------------------------------

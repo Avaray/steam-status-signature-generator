@@ -53,7 +53,31 @@ Then you can access your signature with URL like this:
 https://example.com/path-to-script/76561198037068779.png
 ```
 
-## Config File
+## Configuration
+
+```mermaid
+graph TD
+    A[Check if config file exists] --> B[Gather data from config file]
+    B --> C{Is data missing?}
+    C -->|Yes| D[Check environment variables]
+    D --> E{Is data still missing?}
+    E -->|Yes| F[Check arguments passed to script]
+    F --> G{Is data still missing?}
+    G -->|Yes| H[Check if something was passed in IRL]
+    H --> I{Is data still missing?}
+    I -->|Yes| J[Check if any required variable is missing]
+    J --> K{Are any required variables missing?}
+    K -->|Yes| L[Exit app]
+    K -->|No| M[Continue with application]
+    I -->|No| M
+    G -->|No| M
+    E -->|No| M
+    C -->|No| M
+```
+
+### Timezone
+
+https://www.php.net/manual/en/timezones.europe.php
 
 You need `config.php` file only
 

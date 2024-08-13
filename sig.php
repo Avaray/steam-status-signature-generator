@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Steam Signature Generator</title>
-</head>
-<body>
-    <?php
-
-// This is my attempt to create a new version of this script.
-// First script was created almost 10 years ago and might not work anymore.
-// To be honest I don't like PHP at all, I don't know this language, I prefer JS/TS, but my curiosity leads me here.
-// So I used Claude.ai to help me with the code to make it modern and more professional.
-// This code have some errors to fix, needs to be tweaked and improved.
-// Maybe someday I will finish it, but for now I have more interesting projects to work on.
+<?php
 
 // Check if GD is installed
 $gd_functions = get_extension_funcs("gd");
@@ -260,7 +245,3 @@ switch ($personastate) {
 
 // save image
 imagepng($img, 'sig.png');
-
-?>
-</body>
-</html>

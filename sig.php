@@ -28,23 +28,20 @@ $steam_api_key = '';
 // Check if Steam API Key is set in the environment variables
 if (getenv('STEAM_API_KEY')) {
     msg("Steam API Key found in environment variables.");
-    $steam_api_key = getenv('STEAM_ID');
+    $steam_api_key = getenv('STEAM_API_KEY');
 }
 
 // Read arguments passed in the command line
 if (!empty($argv)) {
-    $args = explode(',', $argv[1]);
-    foreach ($args as $arg) {
-        $arg = explode('=', $arg);
+    for ($i = 1; $i < count($argv); $i++) {
+        $arg = explode('=', $argv[$i]);
         if (count($arg) === 2 && !empty($arg[1])) {
             if ($arg[0] === 'steam_id') {
                 msg("Steam ID {$arg[1]} found in arguments.");
                 $steam_id = $arg[1];
-            } elseif ($arg[0] === 'steam_api_key') {
-                if (empty($steam_api_key)) {
-                    msg("Steam API Key found in arguments");
-                    $steam_api_key = $arg[1];
-                }
+            } elseif ($arg[0] === 'steam_api_key' && empty($steam_api_key)) {
+                msg("Steam API Key found in arguments.");
+                $steam_api_key = $arg[1];
             } else {
                 msg("Found unknown argument: {$arg[0]}");
             }
@@ -55,14 +52,12 @@ if (!empty($argv)) {
 // Check if arguments are passed in the URL
 // Server should be configured to allow URL query parameters
 // Otherwise array $_GET will be empty
-if (isset($_GET['steam_id']) && !empty($_GET['steam_id'])) {
-    if (empty($steam_api_key)) {
-        msg("Steam ID found in the URL.");
-        $steam_id = $_GET['steam_id'];
-    }
+if (isset($_GET['steam_id']) && !empty($_GET['steam_id']) && empty($steam_id)) {
+    msg("Steam ID found in the URL.");
+    $steam_id = $_GET['steam_id'];
 }
 
-if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key'])) {
+if (isset($_GET['steam_api_key']) && !empty($_GET['steam_api_key']) && empty($steam_api_key)) {
     msg("Steam API Key found in the URL.");
     $steam_api_key = $_GET['steam_api_key'];
 }
@@ -71,19 +66,29 @@ define('repository_url', 'https://github.com/Avaray/personal-steam-signature');
 
 $config = require 'config.php';
 
-msg(getenv('STEAM_API_KEY'));
-
-// Check if required fields are set
-if (empty($config['steam_id'])) {
-    die('ERROR: Steam ID not specified in config.php');
+// Check if Steam ID is set in the config file
+if (!empty($config['steam_id']) && empty($steam_id)) {
+    msg("Steam ID found in the config file.");
+    $steam_id = $config['steam_id'];
 }
 
-if (empty($config['steam_api_key'])) {
-    die('ERROR: Steam API key not specified in config.php');
+// Check if Steam API Key is set in the config file
+if (!empty($config['steam_api_key']) && empty($steam_api_key)) {
+    msg("Steam API Key found in the config file.");
+    $steam_api_key = $config['steam_api_key'];
+}
+
+// Last check for Steam ID
+if (empty($steam_id)) {
+    msg("Steam ID not found. Please set Steam ID in the config file or pass it as an argument.", true);
+}
+
+// Last check for Steam API Key
+if (empty($steam_api_key)) {
+    msg("Steam API Key not found. Please set Steam API Key in the config file or pass it as an argument.", true);
 }
 
 exit();
-
 // --------------------------------------------------------------------------------------------
 // STEAM API - GETTING INFORMATION
 // --------------------------------------------------------------------------------------------

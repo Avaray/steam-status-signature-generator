@@ -79,7 +79,7 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | `db_file`           | `string`   |  `""`   |   _No_   | Path to the JSON file where statuses will be saved                                                           |
 | `output_dir`        | `string`   |  `""`   |   _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory     |
 | `self_running`      | `boolean`  | `false` |   _No_   | If set to `true`, script will run itself every `X` seconds. You need handle crashes and restarts by yourself |
-| `interval`          | `integer`  |   `0`   |   _No_   | Interval in seconds for `self_running` option. By default interval is calculated based on number of IDs      |
+| `interval`          | `integer`  |   `0`   |   _No_   | Interval in seconds for `self_running` option. By default interval is calculated automatically               |
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 

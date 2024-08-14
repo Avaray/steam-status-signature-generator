@@ -1,4 +1,4 @@
-# 😎 Personal Steam Signature Generator
+# 😎 Steam Status Signature Generator
 
 <!-- Remember to change branches in badges after PR to main -->
 

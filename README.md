@@ -132,3 +132,4 @@ Due to your [server configuration](<https://en.wikipedia.org/wiki/Cache_(computi
 - [ ] Customizations for individual IDs.
 - [x] Allow to use any kind of file for IDs.
 - [ ] Possibility to pass all options as arguments.
+- [ ] Think about merging IDs from different sources and not break support for old PHP versions.

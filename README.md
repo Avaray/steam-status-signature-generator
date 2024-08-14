@@ -102,7 +102,7 @@ If you are planning to use this script for a long time for a large number of use
 
 ### With Cron
 
-If you are planning to use this script for a small number of users (maybe just for yourself), you can run it with [Cron](https://cronitor.io/guides/cron-jobs).
+If you are planning to use this script for a small number of users (maybe just for yourself), you can run it with [Cron](https://cronitor.io/guides/cron-jobs).  
 [Crontab.guru](https://crontab.guru/) will help you to create a cron schedule expression.
 
 ```bash
@@ -110,7 +110,7 @@ If you are planning to use this script for a small number of users (maybe just f
 */5 * * * * /path/to/executable/php /path/to/sig.php
 ```
 
-**Not recommended use is to hold files of this script in public web directory. If you do so, make sure you are not exposing files containing sensitive data like file with Steam APK Key or files with IDs.** Remember that anyone can run this script if they know the URL. That might lead to flooding your server. There are ways to prevent this, but it's better to keep this script in a private directory and use other methods to execute it.
+**Not recommended use is to hold files of this script in public web directory. If you do so, make sure you are not exposing files containing sensitive data like file with Steam API Key or files with IDs.** Remember that anyone can run this script if they know the URL. That might lead to flooding your server. There are ways to prevent this, but it's better to keep this script in a private directory and use other methods to execute it.
 
 ## Notes
 

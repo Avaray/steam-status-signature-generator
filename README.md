@@ -75,7 +75,7 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | `capitalize_status` | `boolean`  | `false` |  ❌ _No_   | Status will be capitalized                                                                                   |
 | `font_primary`      | `string`   |  `""`   |  ❌ _No_   | Name of the font file in `fonts` directory                                                                   |
 | `font_secondary`    | `string`   |  `""`   |  ❌ _No_   | Name of the font file in `fonts` directory                                                                   |
-| `input_file`        | `string`   |  `""`   |  ❌ _No_   | Path to the file with list of IDs.<br>Supported formats: `.txt`, `.json`                                     |
+| `input_file`        | `string`   |  `""`   |  ❌ _No_   | Path to the file with list of IDs.<br>Supported formats: all                                                 |
 | `db_file`           | `string`   |  `""`   |  ❌ _No_   | Path to the JSON file where statuses will be saved                                                           |
 | `output_dir`        | `string`   |  `""`   |  ❌ _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory     |
 | `self_running`      | `boolean`  | `false` |  ❌ _No_   | If set to `true`, script will run itself every `X` seconds. You need handle crashes and restarts by yourself |
@@ -86,8 +86,9 @@ You can check configuration flow [here](FLOW.md) to see how the script searches 
 ### Loading IDs from file
 
 If you want to load IDs from [JSON](https://www.w3schools.com/js/js_json_arrays.asp) file, that file should contain one valid array of IDs.  
-In `Text` file you can separate IDs by anything you want (new line, space, symbol, letter).  
-IDs from file and IDs provided by other methods will **Not** be merged. Use just one method.
+In all other file types you can separate IDs by anything you want (new line, space, symbol, letter). The only requirement is that IDs should not be encrypted or encoded in any way.
+
+IDs from `input_file` and IDs provided by other methods will **Not** be merged. Use just one method at a time.
 
 ## Notes
 

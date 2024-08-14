@@ -67,12 +67,12 @@ if (!empty($config['input_file'])) {
             if (isset($json['ids'])) {
                 $steam_ids = $json['ids'];
             }
-        } elseif ($file_extension === 'txt') {
+        } else {
             $content = file_get_contents($file_path);
             $extracted = preg_split('/[^\d]+/', $content);
-            $steam_ids = array_filter($extracted);
-        } else {
-            msg("Unsupported file extension .{$file_extension} for the input file.");
+            $steam_ids = array_filter($extracted, function ($value) {
+                return strlen($value) === 17;
+            });
         }
         $amount = count($steam_ids);
         if ($amount === 0) {

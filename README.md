@@ -16,7 +16,7 @@ Where you place the generated image is entirely up to you. In the past, people u
 
 ## Requirements
 
-- [PHP](https://www.php.net/) 5.4 or higher. Check badges above for PHP versions.
+- [PHP](https://www.php.net/) 5.3 or higher. Check badges above for PHP versions.
 - [GD](https://github.com/libgd/libgd) extension. Depending on your server configuration, this will either be enabled or disabled. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information on how to enable it.
 - [CURL](https://curl.se/) extension. Same case as with GD extension. If it's not enabled, enable it.
 
@@ -100,5 +100,5 @@ In text file you can separate ID's by anything you want (new line, space, symbol
 - [ ] Support for multiple users (up to 100 ...and maybe more). Loading list from file.
 - [ ] Automatic delay if previous request was made less than X seconds ago.
 - [ ] Workflow for generating example images.
-- [ ] Cleanups for ID's that are not used anymore.
+- [x] Cleanups for ID's that are not used anymore.
 - [ ] Customizations for individual ID's.

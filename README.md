@@ -46,7 +46,7 @@ You can do that in three ways.
 
 ```json
 {
-  "key": "ABCD",
+  "keys": ["ABCD", "EFGH"],
   "ids": ["1234", "5678"]
 }
 ```
@@ -56,7 +56,7 @@ You can do that in three ways.
 > In this case you need to split `ids` with comma `,`.
 
 ```bash
-php sig.php key=ABCD ids=1234,5678
+php sig.php keys=ABCD,EFGH ids=1234,5678
 ```
 
 ### By passing variables as URL parameters.
@@ -65,19 +65,23 @@ php sig.php key=ABCD ids=1234,5678
 > If you will keep this script in public directory, make sure you are not exposing your `config.json` file.
 
 ```
-https://wow.com/?key=ABCD&ids=1234,5678
+https://wow.com/?keys=ABCD,EFGH&ids=1234,5678
 ```
 
-### API Key in Environment Variable
+### API Keys in Environment Variable
 
-You can also set your API Key as `STEAM_API_KEY` environment variable. Script will read it.
+You can also set your API Keys as `STEAM_API_KEYS` environment variable. Script will read it.
+
+```bash
+export STEAM_API_KEYS="ABCD,EFGH"
+```
 
 ## List of options for `config.json` file
 
 | Key                 | Value<br>Type | Default |  Required  | Description                                                                                                  |
 | ------------------- | :-----------: | :-----: | :--------: | ------------------------------------------------------------------------------------------------------------ |
-| `key`               |   `string`    |  `""`   | ✅ **Yes** | Your Steam [API Key](https://steamcommunity.com/dev/apikey)                                                  |
-| `ids`               |    `array`    | `[""]`  | ✅ **Yes** | List of [Community IDs](https://developer.valvesoftware.com/wiki/SteamID) (SteamID64 only)                   |
+| `keys`              |    `array`    |  `[]`   | ✅ **Yes** | Your Steam [API Key](https://steamcommunity.com/dev/apikey)                                                  |
+| `ids`               |    `array`    |  `[]`   | ✅ **Yes** | List of [Community IDs](https://developer.valvesoftware.com/wiki/SteamID) (SteamID64 only)                   |
 | `timezone`          |   `string`    |  `""`   |  ❌ _No_   | Your [TimeZone](https://www.php.net/manual/en/timezones.europe.php) (for time correction in logs)            |
 | `avatar`            |   `boolean`   | `true`  |  ❌ _No_   | Include profile image                                                                                        |
 | `capitalize_name`   |   `boolean`   | `false` |  ❌ _No_   | Name will be capitalized                                                                                     |
@@ -97,7 +101,7 @@ You can check configuration flow [here](FLOW.md) to see how the script searches 
 If you want to load IDs from [JSON](https://www.w3schools.com/js/js_json_arrays.asp) file, that file should contain one valid array of IDs.  
 In all other file types you can separate IDs by anything you want (new line, space, symbol, letter). The only requirement is that IDs should not be encrypted or encoded in any way.
 
-IDs from `input_file` and IDs provided by other methods will **Not** be merged. Use just one method at a time.
+If you have IDs in `config.json` and in `input_file`, and maybe you passed some IDs as arguments, all of them will be used. Duplicated IDs will be removed.
 
 ## Usage
 

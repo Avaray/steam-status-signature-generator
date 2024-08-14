@@ -86,7 +86,8 @@ You can check configuration flow [here](FLOW.md) to see how the script searches 
 ### Loading IDs from file
 
 If you want to load IDs from [JSON](https://www.w3schools.com/js/js_json_arrays.asp) file, that file should contain one valid array of IDs.  
-In `Text` file you can separate IDs by anything you want (new line, space, symbol, letter).
+In `Text` file you can separate IDs by anything you want (new line, space, symbol, letter).  
+IDs from file and IDs provided by other methods will **Not** be merged. Use just one method.
 
 ## Notes
 

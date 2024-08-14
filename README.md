@@ -104,3 +104,4 @@ When you run the script for the first time, it will generate statuses for all ID
 - [ ] Workflow for generating example images.
 - [x] Cleanups for IDs that are not used anymore.
 - [ ] Customizations for individual IDs.
+- [ ] Allow to use any kind of file for IDs.

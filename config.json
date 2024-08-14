@@ -1,15 +1,14 @@
 {
-  "key": "",
-  "ids": [""],
+  "keys": [],
+  "ids": [],
   "timezone": "",
-  "avatar": true,
-  "capitalize_name": true,
-  "capitalize_status": false,
-  "font_primary": "",
-  "font_secondary": "",
-  "input_file": "users.json",
-  "db_file": "db.json",
+  "input_file": "",
   "output_dir": "status",
   "self_running": false,
-  "interval": 60
+  "interval": 60,
+  "avatar": true,
+  "capitalize_name": false,
+  "capitalize_status": false,
+  "font_primary": "",
+  "font_secondary": ""
 }

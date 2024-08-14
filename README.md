@@ -68,7 +68,7 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | Key                 | Value type | Default | Required | Description                                                                                               |
 | ------------------- | ---------- | :-----: | :------: | --------------------------------------------------------------------------------------------------------- |
 | `key`               | `string`   |  `""`   | **Yes**  | Your Steam [API Key](https://steamcommunity.com/dev/apikey)                                               |
-| `ids`               | `array`    | `[""]`  | **Yes**  | List of [Community ID's](https://developer.valvesoftware.com/wiki/SteamID) (SteamID64)                    |
+| `ids`               | `array`    | `[""]`  | **Yes**  | List of [Community ID's](https://developer.valvesoftware.com/wiki/SteamID) (SteamID64 only)               |
 | `timezone`          | `string`   |  `""`   |   _No_   | Your [TimeZone](https://www.php.net/manual/en/timezones.europe.php) (for time correction in logs)         |
 | `avatar`            | `boolean`  | `true`  |   _No_   | Include profile image                                                                                     |
 | `capitalize_name`   | `boolean`  | `false` |   _No_   | Name will be capitalized                                                                                  |
@@ -81,6 +81,11 @@ https://wow.com/?key=ABCD&ids=1234,5678
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 
+### Loading ID's from file
+
+If you want to load ID's from [JSON](https://www.w3schools.com/js/js_json_arrays.asp) file, that file should contain one valid array of ID's.  
+In text file you can separate ID's by anything you want (new line, space, symbol, letter).
+
 ## Notes
 
 Keep in mind that there is limit of `100,000` requests per day for Steam API. If you are planning to use this script for a large number of users, you should calculae how often you can run this script. Maximum number of users to check in one request is `100`. So if you have `1000` users, you will need to make `10` requests in one run. So, in this example you can perform entire operation every `≈ 8.64 seconds` to not exceed the limit.
@@ -88,11 +93,6 @@ Keep in mind that there is limit of `100,000` requests per day for Steam API. If
 Dealing with many users can be heavy for your server. If you are planning to use this script as part of a public service, you should consider using good hosting provider. Free service providers may ban your account if you exceed their limits.
 
 When you run the script for the first time, it will generate statuses for all ID's. This can take a lot of time and machine resources. On next runs, it will only generate them for people whose statuses have changed.
-
-### Loading ID's from file
-
-If you want to load ID's from [JSON](https://www.w3schools.com/js/js_json_arrays.asp) file, that file should contain one valid array of ID's.  
-In text file you can separate ID's by anything you want (new line, space, symbol, letter).
 
 ## TODO's
 

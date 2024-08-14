@@ -98,7 +98,8 @@ IDs from `input_file` and IDs provided by other methods will **Not** be merged. 
 
 ### With Process Manager
 
-If you are planning to use this script for a long time for a large number of users, I would recommend running it with Process Manager (like [PM2](https://github.com/Unitech/pm2), [Servicer](https://servicer.dev/), [systemd](https://en.wikipedia.org/wiki/Systemd) and similar) that will restart it if it crashes. For this you also need to set `self_running` to `true` in `config.json` file.
+If you are planning to use this script for a long time for a large number of users, I would recommend running it with Process Manager (like [PM2](https://github.com/Unitech/pm2), [Servicer](https://servicer.dev/), [systemd](https://en.wikipedia.org/wiki/Systemd) and similar) that will restart it if it crashes.  
+For this you also need to set `self_running` to `true` in `config.json` file.
 
 ### With Cron
 

@@ -63,6 +63,10 @@ php sig.php key=ABCD ids=1234,5678
 https://wow.com/?key=ABCD&ids=1234,5678
 ```
 
+### API Key in Environment Variable
+
+You can also set your API Key as `STEAM_API_KEY` environment variable. Script will read it.
+
 ## List of options for `config.json` file
 
 | Key                 | Value<br>Type | Default |  Required  | Description                                                                                                  |

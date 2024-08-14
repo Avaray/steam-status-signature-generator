@@ -10,9 +10,14 @@
 [![8.0](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.0.yml/badge.svg?branch=making-it-modern)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.0.yml)
 [![8.4](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.4.yml/badge.svg?branch=making-it-modern)](https://github.com/Avaray/personal-steam-signature/actions/workflows/test_PHP8.4.yml)
 
-This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) image with status of [Steam](https://store.steampowered.com/) user.  
-The width of the image adjusts to the length of the username or the length of the game title the user is currently playing. The height of the image is fixed.  
-Where you place the generated image is entirely up to you. In the past, people used to add such status images to their signatures on [internet forums](https://en.wikipedia.org/wiki/Internet_forum).
+This [PHP](https://www.php.net/) script generates [PNG](https://en.wikipedia.org/wiki/PNG) images with status of [Steam](https://store.steampowered.com/) users.  
+In the past, people used to add such status images to their signatures on [internet forums](https://en.wikipedia.org/wiki/Internet_forum).
+
+The image shows user's profile picture, username and their status or the game they are currently playing.  
+The width of the image adjusts automatically. The height of the image is fixed.
+
+_**What I can do with this script?**_  
+You can use it as your personal signature generator or you can use it as a part of your website. Maybe you will launch a website where people can generate their own signatures? IDK, if you are reading this, you probably have some idea.
 
 ## Requirements
 
@@ -98,13 +103,14 @@ IDs from `input_file` and IDs provided by other methods will **Not** be merged. 
 
 ### With Process Manager
 
-If you are planning to use this script for a long time for a large number of users, I would recommend running it with Process Manager (like [PM2](https://github.com/Unitech/pm2), [Servicer](https://servicer.dev/), [systemd](https://en.wikipedia.org/wiki/Systemd) and similar) that will restart it if it crashes.  
+If you are planning to use this script for a long time for a large number of users, I would recommend running it with Process Manager (like [PM2](https://github.com/Unitech/pm2), [Servicer](https://servicer.dev/), [systemd](https://en.wikipedia.org/wiki/Systemd) and similar) that will restart it if it crashes. I'm working hard to make this script as stable as possible, but you never know what can happen. Even if script will run perfectly, it's good to use such tools.
+
 For this you also need to set `self_running` to `true` in `config.json` file.
 
 ### With Cron
 
-If you are planning to use this script for a small number of users (maybe just for yourself), you can run it with [Cron](https://cronitor.io/guides/cron-jobs).  
-[Crontab.guru](https://crontab.guru/) will help you to create a cron schedule expression.
+If you are planning to use this script for a small number of users (maybe just for yourself), you can run it with [Cron](https://en.wikipedia.org/wiki/Cron).  
+[Crontab.guru](https://crontab.guru/) will help you to create a cron schedule expression. [Cronitor.io](https://cronitor.io/guides/cron-jobs) have some useful guides about cron jobs.
 
 ```bash
 # Run script every 5 minutes
@@ -133,3 +139,4 @@ Due to your [server configuration](<https://en.wikipedia.org/wiki/Cache_(computi
 - [x] Allow to use any kind of file for IDs.
 - [ ] Possibility to pass all options as arguments.
 - [ ] Think about merging IDs from different sources and not break support for old PHP versions.
+- [ ] Possibility to use multiple Steam API Keys to reduce interval with large number of users.

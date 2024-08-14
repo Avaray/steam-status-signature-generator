@@ -1,7 +1,7 @@
 <?php
 
 // --------------------------------------------------------------------------------------------
-// CONFIGURATION
+// CONFIGURATION AND BASIC FUNCTIONS
 // --------------------------------------------------------------------------------------------
 
 // Set the current directory to the script directory
@@ -12,6 +12,7 @@ $steam_ids = array();
 $steam_api_key = '';
 $config = array();
 $database = array();
+$database_file = file_exists('db.json') ? 'db.json' : null;
 
 // Custom echo function with timestamp
 function msg($message, $die = false)
@@ -126,6 +127,9 @@ if (!empty($argv) && empty($steam_ids)) {
         if (count($arg) === 2 && !empty($arg[1])) {
             if ($arg[0] === 'ids') {
                 $ids = explode(',', $arg[1]);
+                $ids = array_filter($ids, function ($id) {
+                    return is_string($id) && strlen($id) === 17 && ctype_digit($id);
+                });
                 $amount = count($ids);
                 if ($amount === 1) {
                     msg("Steam ID {$ids[0]} found in arguments.");
@@ -183,61 +187,29 @@ if (empty($steam_api_key)) {
     msg("Steam API Key not found. Please set Steam API Key in the config file or pass it as an argument.", true);
 }
 
-// Function to load the database from a specified file
-function load_database($filePath)
+// Function to load the database from a file
+function load_database($database_file)
 {
-    if (file_exists($filePath)) {
-        $database = json_decode(file_get_contents($filePath), true);
+    // I think I should clean this function later. Checking if file exist might be not necessary.
+    // Maybe I should use try-catch block here. Need to re-think this.
+    if (file_exists($database_file)) {
+        $database = json_decode(file_get_contents($database_file), true);
         msg("Database loaded with " . count($database) . " entries.");
         return $database;
     }
     return null;
 }
 
-// Check if the database file is set in the config file
-if (!empty($config['db_file']) || file_exists('db.json')) {
-    $database = load_database($config['db_file']);
-    if ($database === null) {
-        $database = load_database('db.json');
-    }
-    if ($database === null) {
-        msg("Database file not found: " . (!empty($config['db_file']) ? $config['db_file'] : 'db.json'));
-    } else {
-        clean_database($database, $steam_ids);
-    }
-}
-
 // Function to save database to a file
-function save_database($database)
+function save_database($database_file, $database)
 {
-    file_put_contents('db.json', json_encode($database, JSON_PRETTY_PRINT));
+    $json_data = json_encode($database, JSON_PRETTY_PRINT) . "\n";
+    file_put_contents($database_file, $json_data);
     msg("Database saved with " . count($database) . " entries.");
 }
 
-// Function to calculate minimal interval based on the number of Steam IDs
-function calculate_min_interval($steam_ids, $output_format = 'seconds', $info = false)
-{
-    $max_requests_per_day = 100000;
-    $max_entries_per_request = 100;
-    $max_requests_per_process = ceil(count($steam_ids) / $max_entries_per_request);
-    $seconds_per_day = 86400;
-    $min_interval = $seconds_per_day / $max_requests_per_day * $max_requests_per_process;
-    $rounded = ceil($min_interval * 10) / 10;
-    if ($output_format === 'ms') {
-        $rounded = $rounded * 1000;
-    } elseif ($output_format === 'minutes') {
-        $rounded = $rounded / 60;
-    } elseif ($output_format === 'hours') {
-        $rounded = $rounded / 3600;
-    }
-    if ($info) {
-        msg("Recommended minimum request interval: {$rounded} {$output_format}");
-    }
-    return $rounded;
-}
-
 // Function to clean the database from old entries (remove entries that does not exist in the current list of Steam IDs)
-function clean_database($database, $steam_ids)
+function update_database($database, $steam_ids)
 {
     $new_database = array();
     foreach ($database as $entry) {
@@ -252,6 +224,60 @@ function clean_database($database, $steam_ids)
     return $new_database;
 }
 
+// Check if custom database is specified and if it exists
+// Otherwise use default database file
+if (!empty($config['db_file']) && file_exists($config['db_file'])) {
+    msg("Custom database file found: " . $config['db_file']);
+    $database_file = $config['db_file'];
+} elseif ($database_file === null) {
+    msg("Database file not found. Using default database file: db.json");
+    $database_file = 'db.json';
+    update_database();
+}
+
+// Load database from a file for the first time
+if ($database === null) {
+    $database = load_database($database_file);
+}
+
+// Check if default database file exists
+if ($database === null && file_exists('db.json')) {
+    $database = load_database('db.json');
+}
+
+// Check if database is empty
+if ($database !== null && empty($database)) {
+    msg("Database file not found: " . (!empty($config['db_file']) ? $config['db_file'] : 'db.json'));
+    msg("Creating new database file.");
+    // save_database($database_file, $database);
+}
+
+// Update database for the first time
+update_database($database, $steam_ids);
+
+// Function to calculate minimal interval based on the number of Steam IDs
+function calculate_min_interval($steam_ids, $output_format = 'seconds', $info = false)
+{
+    $max_requests_per_day = 100000;
+    $max_entries_per_request = 100;
+    $max_requests_per_process = ceil(count($steam_ids) / $max_entries_per_request);
+    $seconds_per_day = 86400;
+    $min_interval = $seconds_per_day / $max_requests_per_day * $max_requests_per_process;
+    // $rounded = ceil($min_interval * 10) / 10; // Round to the nearest 0.1
+    $rounded = ceil($min_interval); // Round to the nearest second
+    if ($output_format === 'ms') {
+        $rounded = $rounded * 1000;
+    } elseif ($output_format === 'minutes') {
+        $rounded = $rounded / 60;
+    } elseif ($output_format === 'hours') {
+        $rounded = $rounded / 3600;
+    }
+    if ($info) {
+        msg("Recommended minimum request interval: {$rounded} {$output_format}");
+    }
+    return $rounded;
+}
+
 // Function to get file hash.
 // Will be used to detect changes in users.json file
 function file_hash($file_path)
@@ -259,208 +285,54 @@ function file_hash($file_path)
     return md5_file($file_path);
 }
 
-// Until now everything works fine for PHP 5.3 and above
-exit();
-
-// --------------------------------------------------------------------------------------------
-// STEAM API - GETTING INFORMATION
-// https://partner.steamgames.com/doc/webapi/ISteamUser#GetPlayerSummaries
-// --------------------------------------------------------------------------------------------
-
-// Set proper protocol based on the server configuration
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-
-// Set the base URL for the Steam API request
-$api_base_url = "{$protocol}://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/";
-
-// Set the full URL for the Steam API request
-$api_url = "{$api_base_url}?key={$steam_api_key}&steamids={$config['steam_id']}";
-
-// Function to get player summaries from the Steam API
-function get_player_summaries($api_url)
+// Function to calculate seconds difference between two timestamps
+// Will be used in self_running mode
+function seconds_diff($timestamp1, $timestamp2)
 {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $api_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-    $response = curl_exec($ch);
-    $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if ($response_code === 0) {
-        msg("ERROR: cURL request failed. Check internet connection and SSL.", true);
-    }
-
-    curl_close($ch);
-    if ($response === false) {
-        return null;
-    }
-
-    $json = json_decode($response, true);
-    return $json;
+    return abs($timestamp1 - $timestamp2);
 }
-
-// Get player summaries from the Steam API
-$summary = get_player_summaries($api_url);
-
-// Check if the response returned object
-if (!isset($summary['response']['players'][0])) {
-    $status_url = 'https://steamstat.us/';
-    msg("ERROR: Could not retrieve info. Check your API key or visit {$status_url} to check Steam services status.", true);
-}
-
-// Check if the response is empty
-if (empty($summary['response']['players'])) {
-    msg('ERROR: Invalid Steam Community ID. Must be valid SteamID64.', true);
-}
-
-// Shorter alternative to previous checks
-// I need to think which approach I want to use
-$summary = isset($summary['response']['players'][0]) ? $summary['response']['players'][0] : null;
-if (!$summary) {
-    msg('ERROR: Could not retrieve info from Steam API.', true);
-}
-
-// Set default empty values for the variables in case they are not in the response
-$personaname = isset($summary['personaname']) ? $summary['personaname'] : '';
-$avatar = isset($summary['avatarmedium']) ? $summary['avatarmedium'] : '';
-$personastate = isset($summary['personastate']) ? $summary['personastate'] : '';
-$gameextrainfo = isset($summary['gameextrainfo']) ? $summary['gameextrainfo'] : '';
-$gameid = isset($summary['gameid']) ? $summary['gameid'] : '';
 
 // --------------------------------------------------------------------------------------------
-// IMAGE GENERATION SETTINGS
+// THIS IS THE MAIN PROGRAM
+// DO NOT REMOVE THIS
 // --------------------------------------------------------------------------------------------
 
-function get_text_width($text, $font, $size)
-{
-    $bbox = imagettfbbox($size, 0, $font, $text);
-    return abs($bbox[2] - $bbox[0]);
-}
+if ($config['self_running']) {
+    msg("Script is set to run automatically.");
+    $min_interval = calculate_min_interval($steam_ids, 'seconds');
+    $wanted_interval = isset($config['interval']) ? $config['interval'] : 60;
+    // $interval = $wanted_interval < $min_interval ? $min_interval : $wanted_interval;
 
-if ($config['capitalized_personaname']) {
-    $personaname = $personaname;
-}
-
-$backgrounds = array(
-    'offline' => 'img/bg_offline.png',
-    'ingame' => 'img/bg_ingame.png',
-    'online' => 'img/bg_online.png',
-);
-
-// Define default fonts
-$font_primary = 'fonts/RobotoCondensed-BoldItalic.ttf';
-$font_secondary = 'fonts/RobotoCondensed-Regular.ttf';
-
-// Check if the primary font is specified in the config file and if it exists in the fonts directory
-if (isset($config['font_primary'])) {
-    $primary = "fonts/{$config['font_primary']}";
-    if (!file_exists($primary)) {
-        msg("Specified primary font not found: {$primary}");
+    // TODO: Add minimal value of 1 second. This should be lowest possible value.
+    if ($wanted_interval < $min_interval) {
+        msg("WARNING: Interval {$wanted_interval} is set too low. Using {$min_interval} seconds.");
+        $interval = $min_interval;
     } else {
-        $font_primary = $primary;
+        msg("Interval is set to {$wanted_interval} seconds.");
+        $interval = $wanted_interval;
     }
-}
 
-// Check if the secondary font is specified in the config file and if it exists in the fonts directory
-if (isset($config['font_secondary'])) {
-    $secondary = "fonts/{$config['font_secondary']}";
-    if (!file_exists($secondary)) {
-        msg("Specified secondary font not found: {$secondary}");
-    } else {
-        $font_secondary = $secondary;
+    $last_run = time();
+    $last_database_save = time();
+
+    while (true) {
+        // Call your function here
+        msg(file_hash('users.json'));
+
+        $current_time = time();
+        $time_diff = seconds_diff($current_time, $last_run);
+
+        if ($time_diff >= $interval) {
+            $last_run = $current_time;
+            msg("Running the script...");
+        } else {
+            // Sleep for the remaining time. Max value 0 is to prevent negative values.
+            $sleep_time = max(0, $interval - $time_diff);
+            msg("Sleeping for {$sleep_time} seconds...");
+            sleep($sleep_time);
+        }
     }
-}
-
-$avatar_size = 64;
-$font_name = $fonts['bold_italic'];
-$font_size_personaname = 24;
-$font_size_default = 16;
-
-$max_text_width = max(
-    get_text_width($personaname, $font_name, $font_size_personaname),
-    get_text_width($gameextrainfo, $font_name, $font_size_default)
-);
-
-$padding = 10;
-$image_width = $avatar_size + $max_text_width + $padding * 4;
-$image_height = $padding * 3 + $font_size_personaname + $font_size_default;
-
-$img = imagecreatetruecolor($image_width, $image_height);
-
-$text_colors = array(
-    'offline' => imagecolorallocate($img, 190, 190, 190),
-    'ingame' => imagecolorallocate($img, 238, 238, 238),
-    'online' => imagecolorallocate($img, 238, 238, 238),
-);
-
-$avatar_start = $padding + $avatar_size;
-$personaname_start = $padding * 2 + $avatar_size + $font_size_personaname;
-$personastate_start = $padding + $personaname_start + $font_size_default;
-
-// --------------------------------------------------------------------------------------------
-// CHECK USER STATUS
-// --------------------------------------------------------------------------------------------
-
-$status_prev = null;
-$status_now = "{$gameid}-{$personastate}-{$personaname}";
-$status_file_path = "status/{$config['steam_id']}";
-
-if (!file_exists($status_file_path)) {
-    file_put_contents($status_file_path, '0');
 } else {
-    $status_prev = file_exists('status.txt') ? file_get_contents('status.txt') : '';
+    msg("Script is set to run manually.");
+    // TODO Handle manual run
 }
-
-if ($status_prev === $status_now) {
-    die('Nothing changed.');
-} else {
-    file_put_contents($status_file_path, $status_now);
-}
-
-msg('Until now everything should be working fine.');
-
-# Rest of work for tomorrow
-
-// --------------------------------------------------------------------------------------------
-// GENERATING IMAGE
-// --------------------------------------------------------------------------------------------
-
-$profile_image = @imagecreatefromstring(file_get_contents($avatar));
-
-function generate_image($state)
-{
-    $background = @imagecreatefrompng($backgrounds[$state]);
-    imagecopy($img, $background, 0, 0, 0, 0, $image_width, $image_height);
-    imagettftext($img, $font_size_personaname, 0, $padding, $personaname_start, $text_colors[$state], $fonts['bold_italic'], $personaname);
-    imagettftext($img, $font_size_default, 0, $padding, $personastate_start, $text_colors[$state], $fonts['italic'], $state);
-    // if ($gameextrainfo) {
-    //     imagettftext($img, $font_size_default, 0, $padding, $personastate_start + $font_size_default + $padding, $text_colors[$state], $fonts['italic'], $gameextrainfo);
-    // }
-    return $img;
-}
-
-// switch ($personastate) {
-//     case 0:
-//         generate_image('offline');
-//         break;
-//     case 1:
-//         generate_image('ingame');
-//         break;
-//     default:
-//         generate_image('online');
-//         break;
-// }
-
-switch ($personastate) {
-    case 1:
-        $background = @imagecreatefrompng($backgrounds['offline']);
-        imagecopy($img, $background, 0, 0, 0, 0, $image_width, $image_height);
-        imagettftext($img, $font_size_personaname, 0, $padding, $personaname_start, $text_colors['offline'], $fonts['bold_italic'], $personaname);
-        imagettftext($img, $font_size_default, 0, $padding, $personastate_start, $text_colors['offline'], $fonts['italic'], 'OFFLINE');
-        break;
-}
-
-// imagecopy($img, $profile_image, $padding, $padding, 20, 20, $avatar_size, $avatar_size);
-
-// save image
-imagepng($img, 'sig.png');

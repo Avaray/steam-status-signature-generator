@@ -65,19 +65,19 @@ https://wow.com/?key=ABCD&ids=1234,5678
 
 ## List of options for `config.json` file
 
-| Key                 | Value type | Default | Required | Description                                                                                                |
-| ------------------- | ---------- | :-----: | :------: | ---------------------------------------------------------------------------------------------------------- |
-| `key`               | `string`   |  `""`   | **Yes**  | Your Steam [API Key](https://steamcommunity.com/dev/apikey)                                                |
-| `ids`               | `array`    | `[""]`  | **Yes**  | List of [Community ID's](https://developer.valvesoftware.com/wiki/SteamID) (SteamID64)                     |
-| `timezone`          | `string`   |  `""`   |   _No_   | Your [TimeZone](https://www.php.net/manual/en/timezones.europe.php) (set if your machine shows wrong time) |
-| `avatar`            | `boolean`  | `true`  |   _No_   | Include profile image                                                                                      |
-| `capitalize_name`   | `boolean`  | `false` |   _No_   | Name will be capitalized                                                                                   |
-| `capitalize_status` | `boolean`  | `false` |   _No_   | Status will be capitalized                                                                                 |
-| `font_primary`      | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
-| `font_secondary`    | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                 |
-| `input_file`        | `string`   |  `""`   |   _No_   | Path to the file with list of ID's. Supported formats: `.txt`, `.json`                                     |
-| `db_file`           | `string`   |  `""`   |   _No_   | Path to the JSON file where statuses will be saved.                                                        |
-| `output_dir`        | `string`   |  `""`   |   _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory.  |
+| Key                 | Value type | Default | Required | Description                                                                                               |
+| ------------------- | ---------- | :-----: | :------: | --------------------------------------------------------------------------------------------------------- |
+| `key`               | `string`   |  `""`   | **Yes**  | Your Steam [API Key](https://steamcommunity.com/dev/apikey)                                               |
+| `ids`               | `array`    | `[""]`  | **Yes**  | List of [Community ID's](https://developer.valvesoftware.com/wiki/SteamID) (SteamID64)                    |
+| `timezone`          | `string`   |  `""`   |   _No_   | Your [TimeZone](https://www.php.net/manual/en/timezones.europe.php) (for time correction in logs)         |
+| `avatar`            | `boolean`  | `true`  |   _No_   | Include profile image                                                                                     |
+| `capitalize_name`   | `boolean`  | `false` |   _No_   | Name will be capitalized                                                                                  |
+| `capitalize_status` | `boolean`  | `false` |   _No_   | Status will be capitalized                                                                                |
+| `font_primary`      | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                |
+| `font_secondary`    | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                |
+| `input_file`        | `string`   |  `""`   |   _No_   | Path to the file with list of ID's. Supported formats: `.txt`, `.json`                                    |
+| `db_file`           | `string`   |  `""`   |   _No_   | Path to the JSON file where statuses will be saved.                                                       |
+| `output_dir`        | `string`   |  `""`   |   _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory. |
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 

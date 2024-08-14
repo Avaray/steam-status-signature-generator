@@ -127,7 +127,6 @@ Due to your [server configuration](<https://en.wikipedia.org/wiki/Cache_(computi
 
 - [ ] Script is fetching data for all IDs (no matter for how many).
 - [ ] Script is able to generate image.
-- [ ] Automatic delay if previous request was made less than X seconds ago.
 - [ ] Workflow for generating example images.
 - [x] Cleanups for IDs that are not used anymore.
 - [ ] Customizations for individual IDs.

@@ -2,6 +2,8 @@
 
 <!-- https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams -->
 
+<!-- TODO: Need to correct flow after last changes in script -->
+
 ```mermaid
 graph TD
     A[Check if config.json file exists] --> B[Read config.json file]

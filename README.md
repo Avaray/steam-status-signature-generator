@@ -75,11 +75,11 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | `capitalize_status` | `boolean`  | `false` |   _No_   | Status will be capitalized                                                                                   |
 | `font_primary`      | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                   |
 | `font_secondary`    | `string`   |  `""`   |   _No_   | Name of the font file in `fonts` directory                                                                   |
-| `input_file`        | `string`   |  `""`   |   _No_   | Path to the file with list of IDs. Supported formats: `.txt`, `.json`                                        |
+| `input_file`        | `string`   |  `""`   |   _No_   | Path to the file with list of IDs.<br>Supported formats: `.txt`, `.json`                                     |
 | `db_file`           | `string`   |  `""`   |   _No_   | Path to the JSON file where statuses will be saved                                                           |
 | `output_dir`        | `string`   |  `""`   |   _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory     |
 | `self_running`      | `boolean`  | `false` |   _No_   | If set to `true`, script will run itself every `X` seconds. You need handle crashes and restarts by yourself |
-| `interval`          | `integer`  |   `0`   |   _No_   | Interval in seconds for `self_running` option. By default interval is calculated automatically               |
+| `interval`          | `integer`  |   `0`   |   _No_   | Interval in seconds for `self_running` option. <br>By default interval is calculated automatically           |
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 

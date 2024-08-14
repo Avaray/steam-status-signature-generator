@@ -16,7 +16,7 @@ Where you place the generated image is entirely up to you. In the past, people u
 
 ## Requirements
 
-- [PHP](https://www.php.net/) 5.3 or higher. Badges above currently shows [Lint](<https://en.wikipedia.org/wiki/Lint_(software)>) status `php -l`.
+- [PHP](https://www.php.net/) 5.3 or higher. Badges above currently shows [Lint](<https://en.wikipedia.org/wiki/Lint_(software)>) status of `php -l`.
 - [GD](https://github.com/libgd/libgd) extension. Depending on your server configuration, this will either be enabled or disabled. Check this [link](https://stackoverflow.com/questions/2283199/enabling-installing-gd-extension-without-gd) for more information on how to enable it.
 - [CURL](https://curl.se/) extension. Same case as with GD extension. If it's not enabled, enable it.
 

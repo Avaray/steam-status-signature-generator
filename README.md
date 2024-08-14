@@ -79,7 +79,7 @@ https://wow.com/?key=ABCD&ids=1234,5678
 | `db_file`           | `string`   |  `""`   |  ❌ _No_   | Path to the JSON file where statuses will be saved                                                           |
 | `output_dir`        | `string`   |  `""`   |  ❌ _No_   | Path to the directory where images will be saved. If not set, images will be saved in the same directory     |
 | `self_running`      | `boolean`  | `false` |  ❌ _No_   | If set to `true`, script will run itself every `X` seconds. You need handle crashes and restarts by yourself |
-| `interval`          | `integer`  |   `0`   |  ❌ _No_   | Interval in seconds for `self_running` option. <br>By default interval is calculated automatically           |
+| `interval`          | `integer`  |  `60`   |  ❌ _No_   | Interval in seconds for `self_running` option.                                                               |
 
 You can check configuration flow [here](FLOW.md) to see how the script searches for configuration.
 
@@ -97,9 +97,10 @@ Dealing with many users can be heavy for your server. If you are planning to use
 
 When you run the script for the first time, it will generate statuses for all IDs. This can take a lot of time and machine resources. On next runs, it will only generate them for people whose statuses have changed.
 
+Due to your [server configuration], users browser caching, and other factors, you (and your users) may experience issues with images not refreshing as expected. This script have no control over these factors.
+
 ## TODO's
 
-- [ ] Re-write the entire script.
 - [ ] Support for multiple users (up to 100 ...and maybe more). Loading list from file.
 - [ ] Automatic delay if previous request was made less than X seconds ago.
 - [ ] Workflow for generating example images.

@@ -9,5 +9,7 @@
   "font_secondary": "",
   "input_file": "users.json",
   "db_file": "db.json",
-  "output_dir": "status"
+  "output_dir": "status",
+  "self_running": false,
+  "interval": 60
 }

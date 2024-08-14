@@ -94,6 +94,24 @@ In all other file types you can separate IDs by anything you want (new line, spa
 
 IDs from `input_file` and IDs provided by other methods will **Not** be merged. Use just one method at a time.
 
+## Usage
+
+### With Process Manager
+
+If you are planning to use this script for a long time for a large number of users, I would recommend running it with Process Manager (like [PM2](https://github.com/Unitech/pm2), [Servicer](https://servicer.dev/), [systemd](https://en.wikipedia.org/wiki/Systemd) and similar) that will restart it if it crashes. For this you also need to set `self_running` to `true` in `config.json` file.
+
+### With Cron
+
+If you are planning to use this script for a small number of users (maybe just for yourself), you can run it with [Cron](https://cronitor.io/guides/cron-jobs).
+[Crontab.guru](https://crontab.guru/) will help you to create a cron schedule expression.
+
+```bash
+# Run script every 5 minutes
+*/5 * * * * /path/to/executable/php /path/to/sig.php
+```
+
+**Not recommended use is to hold files of this script in public web directory. If you do so, make sure you are not exposing files containing sensitive data like file with Steam APK Key or files with IDs.** Remember that anyone can run this script if they know the URL. That might lead to flooding your server. There are ways to prevent this, but it's better to keep this script in a private directory and use other methods to execute it.
+
 ## Notes
 
 Keep in mind that there is limit of `100,000` requests per day for Steam API. If you are planning to use this script for a large number of users, you should calculate how often you can run this script. Maximum number of users to check in one request is `100`. So if you have `1000` users, you will need to make `10` requests in one run. So, in this example you can perform entire operation every `≈ 8.64 seconds` to not exceed the limit. By default, script calculates minimal interval to prevent exceeding the limit.
@@ -102,7 +120,7 @@ Dealing with many users can be heavy for your server. If you are planning to use
 
 When you run the script for the first time, it will generate statuses for all IDs. This can take a lot of time and machine resources. On next runs, it will only generate them for people whose statuses have changed.
 
-Due to your [server configuration], users browser caching, and other factors, you (and your users) may experience issues with images not refreshing as expected. This script have no control over these factors.
+Due to your [server configuration](<https://en.wikipedia.org/wiki/Cache_(computing)>), users browser [caching](<https://en.wikipedia.org/wiki/Cache_(computing)>), and other factors, you (and your users) may experience issues with images not refreshing as expected. This script have no control over these factors.
 
 ## TODO's
 
@@ -111,5 +129,5 @@ Due to your [server configuration], users browser caching, and other factors, yo
 - [ ] Workflow for generating example images.
 - [x] Cleanups for IDs that are not used anymore.
 - [ ] Customizations for individual IDs.
-- [ ] Allow to use any kind of file for IDs.
+- [x] Allow to use any kind of file for IDs.
 - [ ] Possibility to pass all options as arguments.

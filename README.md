@@ -139,4 +139,4 @@ Due to your [server configuration](<https://en.wikipedia.org/wiki/Cache_(computi
 - [ ] Customizations for individual IDs.
 - [x] Allow to use any kind of file for IDs.
 - [ ] Possibility to pass all options as arguments.
-- [ ] Possibility to use multiple Steam API Keys to reduce interval with large number of users.
+- [x] Possibility to use multiple Steam API Keys to reduce interval with large number of users.

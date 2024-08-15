@@ -46,8 +46,8 @@ You can do that in three ways.
 
 ```json
 {
-  "keys": ["ABCD", "EFGH"],
-  "ids": ["1234", "5678"]
+  "keys": ["A1C3", "B2D4"],
+  "ids": ["7284", "6130"]
 }
 ```
 
@@ -56,7 +56,7 @@ You can do that in three ways.
 > In this case you need to split `ids` with comma `,`.
 
 ```bash
-php sig.php keys=ABCD,EFGH ids=1234,5678
+php sig.php keys=A1C3,B2D4 ids=7284,6130
 ```
 
 ### By passing variables as URL parameters.
@@ -65,7 +65,7 @@ php sig.php keys=ABCD,EFGH ids=1234,5678
 > If you will keep this script in public directory, make sure you are not exposing your `config.json` file.
 
 ```
-https://wow.com/?keys=ABCD,EFGH&ids=1234,5678
+https://domain.com/?keys=A1C3,B2D4&ids=7284,6130
 ```
 
 ### API Keys in Environment Variable
@@ -73,7 +73,7 @@ https://wow.com/?keys=ABCD,EFGH&ids=1234,5678
 You can also set your API Keys as `STEAM_API_KEYS` environment variable. Script will read it.
 
 ```bash
-export STEAM_API_KEYS="ABCD,EFGH"
+export STEAM_API_KEYS="A1C3,B2D4"
 ```
 
 ## List of options for `config.json` file

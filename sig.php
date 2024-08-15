@@ -91,25 +91,65 @@ function add_keys($keys, $source)
     add_message(count($new_keys), 'API Key', $source);
 }
 
-// Function to calculate minimal interval based on the number of Steam IDs
-function calculate_min_interval($steam_ids, $output_format = 'seconds', $info = false)
+// Function to display interval in human-readable format
+function seconds_to_time($seconds)
 {
+    if ($seconds < 60) {
+        return "{$seconds}s";
+    }
+
+    $minutes = floor($seconds / 60);
+    $hours = floor($minutes / 60);
+    $days = floor($hours / 24);
+    $months = floor($days / 30);
+
+    $result = '';
+
+    if ($months > 0) {
+        $result .= "{$months}mon ";
+        $days %= 30;
+    }
+
+    if ($days > 0) {
+        $result .= "{$days}d ";
+        $hours %= 24;
+    }
+
+    if ($hours > 0) {
+        $result .= "{$hours}h ";
+        $minutes %= 60;
+    }
+
+    if ($minutes > 0) {
+        $result .= "{$minutes}min ";
+    }
+
+    $remainingSeconds = $seconds % 60;
+    if ($remainingSeconds > 0) {
+        $result .= "{$remainingSeconds}s";
+    }
+
+    return trim($result);
+}
+
+// Function to calculate minimal interval based on the number of Steam IDs
+function calculate_min_interval($info = true)
+{
+    global $steam_ids, $api_keys;
     $max_requests_per_day = 100000;
     $max_entries_per_request = 100;
     $max_requests_per_process = ceil(count($steam_ids) / $max_entries_per_request);
+    // $max_requests_per_process = ceil(22345 / $max_entries_per_request);
     $seconds_per_day = 86400;
-    $min_interval = $seconds_per_day / $max_requests_per_day * $max_requests_per_process;
+    $min_interval = ($seconds_per_day / $max_requests_per_day * $max_requests_per_process) / count($api_keys);
+    // Add 15% to make it safe
+    $min_interval *= 1.15;
     // $rounded = ceil($min_interval * 10) / 10; // Round to the nearest 0.1
     $rounded = ceil($min_interval); // Round to the nearest second
-    if ($output_format === 'ms') {
-        $rounded = $rounded * 1000;
-    } elseif ($output_format === 'minutes') {
-        $rounded = $rounded / 60;
-    } elseif ($output_format === 'hours') {
-        $rounded = $rounded / 3600;
-    }
+
+    $normalized_time = seconds_to_time($rounded);
     if ($info) {
-        msg(null, "Recommended minimum request interval: {$rounded} {$output_format}");
+        msg(null, "Recommended minimum request interval: {$rounded}s" . ($rounded > 60 ? " ({$normalized_time})" : ''));
     }
     return $rounded;
 }
@@ -194,6 +234,38 @@ function test_key($key)
     return $data[1] === 200;
 }
 
+// Function to normalize terabytes. Cut number after matching two digits after last zero
+function normalize_terabytes($value)
+{
+    // NEED TO CONTINUE HERE
+    // CURRENTLY ID CUTS TWO PLACES AFTER THE DOT
+    $normalized = preg_replace('/(\d+\.\d{2})\d+/', '$1', $value);
+    return $normalized;
+}
+
+// Function to predict generated traffic. Return value in TB. Hourly, Daily, Monthly.
+function predict_traffic()
+{
+    global $interval, $steam_ids;
+    $users_to_update = ceil(count($steam_ids) * 0.1);
+    $image_size = 25000; // Average size of the image
+    $bytes_per_user = 740; // Average size of the response for one user
+    $requests_per_hour = 3600 / $interval;
+    $requests_per_day = $requests_per_hour * 24;
+    $requests_per_month = $requests_per_day * 30;
+    $traffic_per_hour = $requests_per_hour * ($image_size + $bytes_per_user);
+    $traffic_per_day = $requests_per_day * ($image_size + $bytes_per_user);
+    $traffic_per_month = $requests_per_month * ($image_size + $bytes_per_user);
+    $traffic_per_hour_total = $traffic_per_hour * $users_to_update;
+    $traffic_per_day_total = $traffic_per_day * $users_to_update;
+    $traffic_per_month_total = $traffic_per_month * $users_to_update;
+    $hourly = normalize_terabytes($traffic_per_hour_total / 1024 / 1024 / 1024);
+    $daily = normalize_terabytes($traffic_per_day_total / 1024 / 1024 / 1024);
+    $monthly = normalize_terabytes($traffic_per_month_total / 1024 / 1024 / 1024);
+
+    msg(null, "Predicted traffic: {$hourly}TB/hour, {$daily}TB/day, {$monthly}TB/month");
+}
+
 // --------------------------------------------------------------------------------------------
 // DATABASE FUNCTIONS
 // --------------------------------------------------------------------------------------------
@@ -273,6 +345,7 @@ $database = array();
 $database_file = 'db.json';
 // $self_running = false;
 $interval = 60;
+$last_key_used = 0;
 
 // Read config file
 if (file_exists($config_file)) {
@@ -389,16 +462,14 @@ if (file_exists($database_file)) {
 }
 
 // --------------------------------------------------------------------------------------------
-// STEAM API FUNCTIONS
-// --------------------------------------------------------------------------------------------
-
-// TODO: Write code
-
-// --------------------------------------------------------------------------------------------
 // IMAGE GENERATION
 // --------------------------------------------------------------------------------------------
 
-// TODO: Write code
+function generate_image()
+{
+    // TODO: Write code
+    msg('success', "Generating image");
+}
 
 // --------------------------------------------------------------------------------------------
 // MAIN
@@ -407,20 +478,21 @@ if (file_exists($database_file)) {
 if ($config['self_running']) {
     msg(null, "Script is set to run automatically");
     // In the future interval should re-calculated after database update / changes in $steam_ids
-    $calculated_interval = calculate_min_interval($steam_ids, 'seconds');
+    $calculated_interval = calculate_min_interval();
     $wanted_interval = !empty($config['interval']) ? $config['interval'] : 60;
 
     if ($wanted_interval < $calculated_interval) {
-        msg(null, "WARNING: Interval {$wanted_interval} is set too low. Using {$calculated_interval} seconds");
+        msg('warning', "Interval {$wanted_interval}s is set too low. Using {$calculated_interval}s");
         $interval = $calculated_interval;
     } else {
-        msg(null, "Interval is set to {$wanted_interval} seconds");
+        msg(null, "Interval is set to {$wanted_interval}s");
         $interval = $wanted_interval;
     }
 
     $last_run = time();
     // $last_database_save = time();
-    $last_key_used = 0;
+
+    predict_traffic();
 
     msg('success', "Running the script in self-running mode");
 
@@ -431,7 +503,22 @@ if ($config['self_running']) {
 
         if ($time_diff >= $interval) {
             $last_run = $current_time;
-            msg(null, pick_key());
+
+            $ids_chunked = array_chunk($steam_ids, 100);
+
+            foreach ($ids_chunked as $ids) {
+                $key = pick_key();
+                msg(null, "Using API Key: {$key}");
+
+                // $url = "{$api_base_url}ISteamUser/GetPlayerSummaries/v2/?key={$key}&steamids=" . implode(',', $ids);
+                // $data = fetch_data($url, $key);
+                // $response = $data[0];
+                // $response_code = $data[1];
+
+                // need to pass data to the function below
+                generate_image();
+            }
+
         } else {
             // Sleep for the remaining time. Max value 0 is to prevent negative values.
             $sleep_time = max(0, $interval - $time_diff);

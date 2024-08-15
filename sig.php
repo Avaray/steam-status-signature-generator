@@ -17,10 +17,28 @@ if (!$curl_functions) {
 // --------------------------------------------------------------------------------------------
 
 // Custom echo function with timestamp
-function msg($message, $die = false)
+// I think I will add one more argument to this function on 1st position. It will be a type of message (info, warning, error)
+function msg($type = null, $message = '', $die = false)
 {
+    if ($type === 'warning') {
+        $color = '33'; // Yellow
+        $prefix = 'WARNING';
+    } elseif ($type === 'error') {
+        $color = '31'; // Red
+        $prefix = 'ERROR';
+    } elseif ($type === 'success') {
+        $color = '32'; // Green
+        $prefix = 'SUCCESS';
+    }
+
     $dateTime = date('Ymd.His'); // YYYYMMDD.HHMMSS
-    echo "\e[34m{$dateTime}\e[0m : {$message}\n";
+
+    if (!$type) {
+        echo "{$dateTime} [INFO] {$message}\n";
+    } else {
+        echo "{$dateTime} \e[{$color}m[{$prefix}] {$message}\e[0m\n";
+    }
+
     if ($die) {
         die();
     }
@@ -42,9 +60,9 @@ function is_valid_key($key)
 function add_message($amount, $type, $source)
 {
     if ($amount === 1) {
-        msg("Imported 1 {$type} from {$source}");
+        msg(null, "Imported 1 {$type} from {$source}");
     } elseif ($amount > 1) {
-        msg("Imported {$amount} {$type}s from {$source}");
+        msg(null, "Imported {$amount} {$type}s from {$source}");
     }
 }
 
@@ -64,12 +82,12 @@ function add_ids($new_ids, $source)
 // In the future, think about combining this with add_ids function
 function add_keys($keys, $source)
 {
-    global $steam_api_keys;
+    global $api_keys;
     $new_keys = array_map('strval', $keys);
-    $new_keys = array_filter(array_unique($new_keys), function ($key) use ($steam_api_keys) {
-        return is_valid_key($key) && !in_array($key, $steam_api_keys);
+    $new_keys = array_filter(array_unique($new_keys), function ($key) use ($api_keys) {
+        return is_valid_key($key) && !in_array($key, $api_keys);
     });
-    $steam_api_keys = array_merge($steam_api_keys, $new_keys);
+    $api_keys = array_merge($api_keys, $new_keys);
     add_message(count($new_keys), 'API Key', $source);
 }
 
@@ -91,7 +109,7 @@ function calculate_min_interval($steam_ids, $output_format = 'seconds', $info = 
         $rounded = $rounded / 3600;
     }
     if ($info) {
-        msg("Recommended minimum request interval: {$rounded} {$output_format}");
+        msg(null, "Recommended minimum request interval: {$rounded} {$output_format}");
     }
     return $rounded;
 }
@@ -108,6 +126,72 @@ function file_hash($file_path)
 function seconds_diff($timestamp1, $timestamp2)
 {
     return abs($timestamp1 - $timestamp2);
+}
+
+// Function to pick next key from the array, if array ends, start from the beginning
+function pick_key()
+{
+    global $last_key_used, $api_keys;
+    $last_key_used++;
+    if ($last_key_used >= count($api_keys)) {
+        $last_key_used = 0;
+    }
+    return $api_keys[$last_key_used];
+}
+
+// Set proper protocol for requests, based on the server configuration
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+
+// Set the base URL for the Steam API request
+$api_base_url = "{$protocol}://api.steampowered.com/";
+
+// Fetch json data and provide response code, return data and response code
+function fetch_data($url, $key)
+{
+    global $protocol, $api_base_url, $api_keys;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "{$url}&key={$key}");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    $response = curl_exec($ch);
+    $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $data = json_decode($response, true);
+    curl_close($ch);
+
+    // IM WORKING ON THIS FUNCTION! NEED TO BE REWRITTEN, CLEANED AND TESTED
+
+    // Check if API Key is rejected
+    if ($response_code === 403) {
+        rejected_key($key);
+    } elseif ($response_code !== 200) {
+        msg('warning', "Failed to fetch data from Steam API. Response code: {$response_code}");
+    }
+
+    return array($data, $response_code);
+}
+
+// Handle rejected API Key
+function rejected_key($key)
+{
+    global $api_keys, $api_keys_rejected;
+    $api_keys_rejected[] = $key;
+    $api_keys = array_diff($api_keys, array($key));
+    msg('warning', "API Key {$key} rejected by Steam API");
+    if (count($api_keys) === 0) {
+        msg('error', "All API Keys have been rejected", true);
+    }
+}
+
+// Check if Steam accepts the API Key
+function test_key($key)
+{
+    // Using this endpoint because response is small (about 51 bytes)
+    // If you know better endpoint, please let me know
+    global $api_base_url;
+    $url = "{$api_base_url}ISteamUser/ResolveVanityURL/v1/?key={$key}&vanityurl=avaray&url_type=1";
+    $data = fetch_data($url, $key);
+    return $data[1] === 200;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -133,10 +217,10 @@ function load_database()
 {
     global $database, $database_file;
     if (file_exists($database_file)) {
-        msg("Loading database from a file.");
+        msg(null, "Loading database from a file.");
         return json_decode(file_get_contents($database_file), true);
     } else {
-        msg("Database file not found. Creating a new database.");
+        msg('warning', "Database file not found. Creating a new database.");
         return create_database();
     }
 }
@@ -147,7 +231,7 @@ function save_database()
     global $database, $database_file;
     $json = json_encode($database, JSON_PRETTY_PRINT);
     file_put_contents($database_file, $json);
-    msg("Database saved to a file");
+    msg(null, "Database saved to a file");
 }
 
 // Function to clean the database from old entries
@@ -166,9 +250,9 @@ function update_database()
     }
     $database = $new_database;
     if ($removed_entries > 0) {
-        msg("Removed {$removed_entries} entries from the database");
+        msg(null, "Removed {$removed_entries} entries from the database");
     } else {
-        msg("Database is up to date");
+        msg(null, "Database is up to date");
     }
 }
 
@@ -180,12 +264,15 @@ function update_database()
 chdir(dirname(__FILE__));
 
 // Declare global variables
-$steam_api_keys = array();
+$api_keys = array();
+$api_keys_rejected = array();
 $steam_ids = array();
 $config = array();
 $config_file = 'config.json';
 $database = array();
 $database_file = 'db.json';
+// $self_running = false;
+$interval = 60;
 
 // Read config file
 if (file_exists($config_file)) {
@@ -197,7 +284,7 @@ if (file_exists($config_file)) {
 
 // Start Message
 $php_version = phpversion();
-msg("Starting script with \e[35mPHP {$php_version}\e[0m");
+msg('success', "Starting script with PHP {$php_version}");
 
 // Check if Steam API Key is set in the config file
 if (!empty($config['keys'])) {
@@ -224,7 +311,7 @@ if (!empty($config['input_file'])) {
 
         }
     } else {
-        msg("Input file {$file_path} not found");
+        msg('warning', "Input file {$file_path} not found");
     }
 }
 
@@ -241,16 +328,16 @@ if (!empty($argv)) {
                 $keys = explode(',', $arg[1]);
                 add_keys($keys, 'arguments');
             } else {
-                msg("Found unknown argument: \e[31m{$arg[0]}\e[0m");
+                msg('warning', "Found unknown argument: \e[31m{$arg[0]}\e[0m");
             }
         }
     }
 }
 
 // Check if Steam API Keys are set in the environment variables
-$steam_api_keys_env = getenv('STEAM_API_KEYS');
-if (!empty($steam_api_keys_env)) {
-    add_keys(explode(',', $steam_api_keys_env), 'environment variables');
+$api_keys_env = getenv('STEAM_API_KEYS');
+if (!empty($api_keys_env)) {
+    add_keys(explode(',', $api_keys_env), 'environment variables');
 }
 
 // Check if things passed in the URL
@@ -266,23 +353,30 @@ if (!empty($_GET)) {
             $keys = explode(',', $value);
             add_keys($keys, 'URL');
         } else {
-            msg("Found unknown query parameter: \e[31m{$key}\e[0m");
+            msg('warning', "Found unknown query parameter: {$key}");
         }
+    }
+}
+
+// Check if API keys are valid
+foreach ($api_keys as $key) {
+    if (!test_key($key)) {
+        rejected_key($key);
     }
 }
 
 // Last check for Steam ID
 if (empty($steam_ids)) {
-    msg("\e[31mSteam ID not found. Please set Steam ID in the config file or pass it as an argument\e[0m", true);
+    msg('error', "Steam ID not found", true);
 } else {
-    msg("Using " . count($steam_ids) . " Steam ID" . (count($steam_ids) > 1 ? 's in total' : '') . "");
+    msg('success', "Using " . count($steam_ids) . " Steam ID" . (count($steam_ids) > 1 ? 's in total' : '') . "");
 }
 
 // Last check for Steam API Key
-if (empty($steam_api_keys)) {
-    msg("\e[31mSteam API Key not found. Please set Steam API Key in the config file or pass it as an argument\e[0m", true);
+if (empty($api_keys)) {
+    msg('error', "Steam API Key not found", true);
 } else {
-    msg("Using " . count($steam_api_keys) . " Steam API Key" . (count($steam_api_keys) > 1 ? 's in total' : '') . "");
+    msg('success', "Using " . count($api_keys) . " Steam API Key" . (count($api_keys) > 1 ? 's in total' : '') . "");
 }
 
 // Load database from a file for the first time
@@ -311,20 +405,24 @@ if (file_exists($database_file)) {
 // --------------------------------------------------------------------------------------------
 
 if ($config['self_running']) {
-    msg("Script is set to run automatically");
+    msg(null, "Script is set to run automatically");
+    // In the future interval should re-calculated after database update / changes in $steam_ids
     $calculated_interval = calculate_min_interval($steam_ids, 'seconds');
     $wanted_interval = !empty($config['interval']) ? $config['interval'] : 60;
 
     if ($wanted_interval < $calculated_interval) {
-        msg("WARNING: Interval {$wanted_interval} is set too low. Using {$calculated_interval} seconds");
+        msg(null, "WARNING: Interval {$wanted_interval} is set too low. Using {$calculated_interval} seconds");
         $interval = $calculated_interval;
     } else {
-        msg("Interval is set to {$wanted_interval} seconds");
+        msg(null, "Interval is set to {$wanted_interval} seconds");
         $interval = $wanted_interval;
     }
 
     $last_run = time();
     // $last_database_save = time();
+    $last_key_used = 0;
+
+    msg('success', "Running the script in self-running mode");
 
     while (true) {
 
@@ -333,15 +431,15 @@ if ($config['self_running']) {
 
         if ($time_diff >= $interval) {
             $last_run = $current_time;
-            // msg("Executing");
+            msg(null, pick_key());
         } else {
             // Sleep for the remaining time. Max value 0 is to prevent negative values.
             $sleep_time = max(0, $interval - $time_diff);
-            // msg("Sleeping for {$sleep_time} seconds...");
+            // msg(null, "Sleeping for {$sleep_time} seconds...");
             sleep($sleep_time);
         }
     }
 } else {
-    msg("Script is set to run manually");
+    msg('success', "Running the script in manual mode");
     // TODO: Write code
 }

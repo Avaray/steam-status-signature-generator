@@ -234,13 +234,16 @@ function test_key($key)
     return $data[1] === 200;
 }
 
-// Function to normalize terabytes. Cut number after matching two digits after last zero
-function normalize_terabytes($value)
+function format_bytes($bytes, $decimals = 2)
 {
-    // NEED TO CONTINUE HERE
-    // CURRENTLY ID CUTS TWO PLACES AFTER THE DOT
-    $normalized = preg_replace('/(\d+\.\d{2})\d+/', '$1', $value);
-    return $normalized;
+    $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    $factor = floor((strlen($bytes) - 1) / 3);
+    // Calculate the human-readable value
+    $formatted_size = $bytes / pow(1024, $factor);
+    // Round the value to the nearest 0.5 or whole number
+    $formatted_size = round($formatted_size * 2) / 2;
+    // Format the output with the specified number of decimals
+    return $formatted_size . ' ' . $units[$factor];
 }
 
 // Function to predict generated traffic. Return value in TB. Hourly, Daily, Monthly.
@@ -259,11 +262,11 @@ function predict_traffic()
     $traffic_per_hour_total = $traffic_per_hour * $users_to_update;
     $traffic_per_day_total = $traffic_per_day * $users_to_update;
     $traffic_per_month_total = $traffic_per_month * $users_to_update;
-    $hourly = normalize_terabytes($traffic_per_hour_total / 1024 / 1024 / 1024);
-    $daily = normalize_terabytes($traffic_per_day_total / 1024 / 1024 / 1024);
-    $monthly = normalize_terabytes($traffic_per_month_total / 1024 / 1024 / 1024);
+    $hourly = format_bytes($traffic_per_hour_total);
+    $daily = format_bytes($traffic_per_day_total);
+    $monthly = format_bytes($traffic_per_month_total);
 
-    msg(null, "Predicted traffic: {$hourly}TB/hour, {$daily}TB/day, {$monthly}TB/month");
+    msg(null, "Predicted traffic: {$hourly}/hour, {$daily}/day, {$monthly}/month");
 }
 
 // --------------------------------------------------------------------------------------------
@@ -442,14 +445,14 @@ foreach ($api_keys as $key) {
 if (empty($steam_ids)) {
     msg('error', "Steam ID not found", true);
 } else {
-    msg('success', "Using " . count($steam_ids) . " Steam ID" . (count($steam_ids) > 1 ? 's in total' : '') . "");
+    msg(null, "Using " . count($steam_ids) . " Steam ID" . (count($steam_ids) > 1 ? 's in total' : '') . "");
 }
 
 // Last check for Steam API Key
 if (empty($api_keys)) {
     msg('error', "Steam API Key not found", true);
 } else {
-    msg('success', "Using " . count($api_keys) . " Steam API Key" . (count($api_keys) > 1 ? 's in total' : '') . "");
+    msg(null, "Using " . count($api_keys) . " Steam API Key" . (count($api_keys) > 1 ? 's in total' : '') . "");
 }
 
 // Load database from a file for the first time

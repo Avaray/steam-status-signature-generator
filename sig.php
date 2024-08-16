@@ -471,7 +471,7 @@ if (file_exists($database_file)) {
 function generate_image()
 {
     // TODO: Write code
-    msg('success', "Generating image");
+    // msg('success', "Generating image");
 }
 
 // --------------------------------------------------------------------------------------------
@@ -511,7 +511,9 @@ if ($config['self_running']) {
 
             foreach ($ids_chunked as $ids) {
                 $key = pick_key();
-                msg(null, "Using API Key: {$key}");
+
+                // $key = pick_key();
+                // msg(null, "Using API Key: {$key}");
 
                 // $url = "{$api_base_url}ISteamUser/GetPlayerSummaries/v2/?key={$key}&steamids=" . implode(',', $ids);
                 // $data = fetch_data($url, $key);
@@ -523,9 +525,7 @@ if ($config['self_running']) {
             }
 
         } else {
-            // Sleep for the remaining time. Max value 0 is to prevent negative values.
             $sleep_time = max(0, $interval - $time_diff);
-            // msg(null, "Sleeping for {$sleep_time} seconds...");
             sleep($sleep_time);
         }
     }

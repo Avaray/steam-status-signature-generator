@@ -236,7 +236,7 @@ function test_key($key)
 
 function format_bytes($bytes, $decimals = 2)
 {
-    $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
     $factor = floor((strlen($bytes) - 1) / 3);
     // Calculate the human-readable value
     $formatted_size = $bytes / pow(1024, $factor);

@@ -1,6 +1,7 @@
 # Personal Steam Signature Generator
 
-> I created this script a long time ago. Please don't use it, unless you're just curious. Recently I created second branch with improvements, [you can see it here](https://github.com/Avaray/personal-steam-signature/tree/making-it-modern). 
+> I created this script a long time ago. Please don't use it, unless you're just curious.  
+Recently I created second branch with improvements, [you can see it here](https://github.com/Avaray/personal-steam-signature/tree/making-it-modern). 
 
 This PHP script generates image (PNG) with Steam status.  
 This is personal script for just one user.  
